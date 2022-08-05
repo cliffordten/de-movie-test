@@ -1,0 +1,15 @@
+query GetMe {
+  me {
+    error {
+      field
+      message
+    }
+    user {
+      email
+      username
+      updatedAt
+      id
+      createdAt
+    }
+  }
+}

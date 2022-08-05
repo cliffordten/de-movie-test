@@ -19,4 +19,3 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY /src ./src
 RUN yarn build
 RUN chown starter_user ./dist
-

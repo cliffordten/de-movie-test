@@ -13,4 +13,8 @@ export default {
   studio_apollo_graphql_url: process.env.STUDIO_APOLLO_GRAPHQL_URL || "",
   dbConnectionRetries: process.env.DB_CONNECTION_RETRIES || 5,
   timeoutBeforeRetry: process.env.TIMEOUT_BEFORE_RETRY || 5000,
+  secret: process.env.SECRET || "",
+  isProd: process.env.NODE_ENV == "production",
+  redisHost: process.env.REDIS_HOST || "",
+  redisPort: process.env.REDIS_PORT || "",
 };

@@ -14,3 +14,10 @@ export const registerSchema = Yup.object().shape({
   ),
   email: Yup.string().email("invalid email").required("email is required"),
 });
+
+export const loginSchema = Yup.object().shape({
+  password: Yup.string()
+    .min(8, "password should be atlease 8 characters!")
+    .required("password is required"),
+  email: Yup.string().email("invalid email").required("email is required"),
+});
