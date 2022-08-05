@@ -6,9 +6,8 @@ import { ApolloServer } from "apollo-server-express";
 import { openDBConnection } from "./utils/database";
 import config from "./constants";
 import { createSchema } from "./utils/createSchema";
-import Redis from "ioredis";
-import session from "express-session";
-import connectRedis from "connect-redis";
+import { redis } from "./utils/redis";
+import { AuthMiddleWare } from "./middlewares";
 // import { AppContext } from "./types";
 
 const main = async () => {
@@ -29,31 +28,11 @@ const main = async () => {
     }
   }
 
-  const RedisStore = connectRedis(session);
-  const redis = new Redis({
-    port: +config.redisPort, // Redis port
-    host: config.redisHost, // Redis host
-  });
-
   redis.on("error", (err) => console.log("Redis Client Error", err));
 
   const app = express();
-  //manage session with redis
-  app.use(
-    session({
-      store: new RedisStore({ client: redis, disableTouch: true }),
-      secret: config.secret,
-      resave: false,
-      name: "DEMOVIE",
-      cookie: {
-        maxAge: 24 * 3600 * 1000, // 24 hours
-        httpOnly: true,
-        secure: config.isProd,
-        sameSite: "lax", // csrf
-      },
-      saveUninitialized: false,
-    })
-  );
+
+  app.use(AuthMiddleWare);
 
   //set up cors with express cors middlewares
   app.use(
@@ -65,7 +44,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await createSchema(),
-    context: ({ req, res }) => ({ req, res }),
+    context: ({ req, res }) => ({ req, res, redis }),
   });
 
   await apolloServer.start();

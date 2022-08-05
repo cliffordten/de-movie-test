@@ -1,11 +1,7 @@
 import { Request, Response } from "express";
+import Redis from "ioredis";
 import { InputType, Field, ObjectType } from "type-graphql";
 import { User } from "./entities/User";
-
-//app interface
-// class AppSession extends Response.session {
-//   userId: string;
-// }
 
 // app input types
 @InputType()
@@ -28,13 +24,15 @@ export class LoginInput {
   password!: string;
 }
 
-// app object types e
+// app object types
 @ObjectType()
 export class AppContext {
   @Field(() => Request)
-  req!: Request & { session: Express.SessionStore & { userId: string } };
+  req!: Request;
   @Field(() => Response)
   res!: Response;
+  @Field(() => Redis)
+  redis!: Redis;
 }
 
 @ObjectType()
@@ -51,4 +49,12 @@ export class UserResponse {
   error?: ErrorType;
   @Field(() => User, { nullable: true })
   user?: User;
+}
+
+@ObjectType()
+export class UserSessionType {
+  @Field(() => String)
+  id: string;
+  @Field(() => String)
+  email: string;
 }

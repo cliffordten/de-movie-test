@@ -3,6 +3,7 @@ import { loginSchema, registerSchema } from "../utils/yup/auth.schema";
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { User } from "../entities/User";
 import { UserResponse, UserInput, LoginInput, AppContext } from "../types";
+import { getToken } from "src/utils/jsontoken";
 @Resolver()
 export class userResolver {
   @Mutation(() => UserResponse)
@@ -40,7 +41,7 @@ export class userResolver {
   @Mutation(() => UserResponse)
   async login(
     @Arg("input") input: LoginInput,
-    @Ctx() { req }: AppContext
+    @Ctx() { redis }: AppContext
   ): Promise<UserResponse> {
     try {
       await loginSchema.validate(input);
@@ -65,7 +66,12 @@ export class userResolver {
         };
       }
 
-      req.session.userId = user.id;
+      const accessToken = getToken({ id: user.id, email: user.email });
+
+      user.accessToken = accessToken;
+
+      //store user token
+      await redis.set(accessToken, accessToken);
 
       return {
         user,
@@ -83,16 +89,22 @@ export class userResolver {
   @Query(() => UserResponse, { nullable: true })
   async me(@Ctx() { req }: AppContext): Promise<UserResponse | undefined> {
     try {
-      const user = await User.findOne(req.session.userId);
+      console.log(
+        "%cuser.ts line:87 user, req.headers.userId",
+        "color: #007acc;",
+        req.headers.userId
+      );
 
-      if (!user) {
+      if (!req.headers.userId) {
         return {
           error: {
-            field: "session",
+            field: "headers",
             message: "User not logged in",
           },
         };
       }
+
+      const user = await User.findOne(req.headers.userId as string);
 
       return {
         user,

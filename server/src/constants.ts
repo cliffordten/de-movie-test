@@ -17,4 +17,5 @@ export default {
   isProd: process.env.NODE_ENV == "production",
   redisHost: process.env.REDIS_HOST || "",
   redisPort: process.env.REDIS_PORT || "",
+  jwtDuration: "24h",
 };
