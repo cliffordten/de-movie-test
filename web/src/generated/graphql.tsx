@@ -15,9 +15,15 @@ export type Scalars = {
   Float: number;
 };
 
+export type ErrorType = {
+  __typename?: 'ErrorType';
+  field?: Maybe<Scalars['String']>;
+  message: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
-  register: User;
+  register: UserResponse;
 };
 
 
@@ -45,8 +51,16 @@ export type User = {
 };
 
 export type UserInput = {
+  confirmPassword: Scalars['String'];
   email: Scalars['String'];
+  password: Scalars['String'];
   username: Scalars['String'];
+};
+
+export type UserResponse = {
+  __typename?: 'UserResponse';
+  error?: Maybe<ErrorType>;
+  user?: Maybe<User>;
 };
 
 export type RegisterMutationVariables = Exact<{
@@ -54,7 +68,7 @@ export type RegisterMutationVariables = Exact<{
 }>;
 
 
-export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'User', email: string, username: string, createdAt: string, updatedAt: string } };
+export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'User', email: string, username: string, updatedAt: string, id: number, createdAt: string } | null } };
 
 export type GetByUsernameQueryVariables = Exact<{
   username: Scalars['String'];
@@ -67,10 +81,17 @@ export type GetByUsernameQuery = { __typename?: 'Query', getByUsername?: { __typ
 export const RegisterDocument = gql`
     mutation Register($input: UserInput!) {
   register(input: $input) {
-    email
-    username
-    createdAt
-    updatedAt
+    error {
+      field
+      message
+    }
+    user {
+      email
+      username
+      updatedAt
+      id
+      createdAt
+    }
   }
 }
     `;
