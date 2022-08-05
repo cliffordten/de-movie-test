@@ -13,9 +13,8 @@ import {
 import { InputField } from "../components/InputField";
 import { withUrqlClient } from "next-urql";
 import { createUrqlClient } from "../utils/createUrqlClient";
-import { useRegisterMutation } from "../generated/graphql";
+import { useLoginMutation } from "../generated/graphql";
 import { useRouter } from "next/router";
-import { registerSchema } from "../utils/yup/auth.schema";
 import { FaEyeSlash, FaEye } from "react-icons/fa";
 import { useState } from "react";
 interface ILoginProps {}
@@ -23,7 +22,7 @@ interface ILoginProps {}
 const Login: NextPage<ILoginProps> = () => {
   const router = useRouter();
   const [show, setShow] = useState(false);
-  const [, register] = useRegisterMutation();
+  const [, login] = useLoginMutation();
   const [error, setError] = useState("");
   return (
     <Wrapper variant="small">
@@ -35,15 +34,13 @@ const Login: NextPage<ILoginProps> = () => {
       )}
       <Formik
         initialValues={{
-          username: "",
           email: "",
           password: "",
-          confirmPassword: "",
         }}
-        validationSchema={registerSchema}
         onSubmit={async (values) => {
-          const response = await register({ input: values });
-          const data = response.data?.register;
+          const response = await login({ input: values });
+          const data = response.data?.login;
+          console.log("%clogin.tsx line:45 data", "color: #007acc;", data);
           if (data?.error) {
             setError(data?.error.message);
             return;
