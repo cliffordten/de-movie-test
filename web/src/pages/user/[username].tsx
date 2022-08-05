@@ -1,18 +1,16 @@
 import { NextPage } from "next";
 import { withUrqlClient } from "next-urql";
 import { useRouter } from "next/router";
-import { useGetByUsernameQuery } from "../../generated/graphql";
+import { useGetMeQuery } from "../../generated/graphql";
 import { createUrqlClient } from "../../utils/createUrqlClient";
 import { Flex } from "@chakra-ui/react";
 
 const User: NextPage = () => {
   const router = useRouter();
   const username = router.query.username as string;
-  const [{ data, error, fetching }] = useGetByUsernameQuery({
-    variables: { username },
-  });
-  const email = data?.getByUsername?.email;
-
+  const [{ data, error, fetching }] = useGetMeQuery();
+  const email = data?.me?.user?.email;
+  console.log("%c[username].tsx line:13 data", "color: #007acc;", data);
   if (fetching) {
     return (
       <Flex alignItems="center" h="100vh" justifyContent="center">
