@@ -11,8 +11,12 @@ import {
   Stack,
   Button,
 } from "@chakra-ui/react";
+import WithAuth from "../hooks/withAuth";
+import { withUrqlClient } from "next-urql";
+import { createUrqlClient } from "../utils/createUrqlClient";
+import { AppWithUserType } from "../utils/interface/pages";
 
-const Home: NextPage = () => {
+const Home: NextPage = ({ user }: AppWithUserType) => {
   return (
     <Flex direction="column" align="center" justify="center" py="3" h="100vh">
       <Head>
@@ -49,18 +53,33 @@ const Home: NextPage = () => {
           </Code>
         </Text>
 
-        <Stack direction="row" spacing={4} align="center" mt={"10"}>
-          <NextLink href="/login" passHref>
-            <Button colorScheme="teal" variant="solid">
-              Login
-            </Button>
-          </NextLink>
-          <NextLink href="/register" passHref>
-            <Button colorScheme="teal" variant="outline">
-              Get Started
-            </Button>
-          </NextLink>
-        </Stack>
+        {!user ? (
+          <Stack direction="row" spacing={4} align="center" mt={"10"}>
+            <NextLink href="/login" passHref>
+              <Button colorScheme="teal" variant="solid">
+                Login
+              </Button>
+            </NextLink>
+            <NextLink href="/register" passHref>
+              <Button colorScheme="teal" variant="outline">
+                Get Started
+              </Button>
+            </NextLink>
+          </Stack>
+        ) : (
+          <Stack direction="row" spacing={4} align="center" mt={"10"}>
+            <NextLink href="/play" passHref>
+              <Button colorScheme="teal" variant="solid">
+                Start Game
+              </Button>
+            </NextLink>
+            <NextLink href="/user" passHref>
+              <Button colorScheme="teal" variant="outline">
+                View Profile
+              </Button>
+            </NextLink>
+          </Stack>
+        )}
       </Flex>
 
       <Flex
@@ -87,4 +106,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default withUrqlClient(createUrqlClient, { ssr: false })(WithAuth(Home));

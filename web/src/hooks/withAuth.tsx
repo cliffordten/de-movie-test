@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { ElementType } from "react";
 import { useGetMeQuery } from "../generated/graphql";
 
-const WithAuth = (WrappedComponent: ElementType) => {
+const WithAuth = (WrappedComponent: ElementType, authorize: Boolean = true) => {
   return Object.assign(
     (props: any) => {
       const router = useRouter();
@@ -19,9 +19,19 @@ const WithAuth = (WrappedComponent: ElementType) => {
           </Flex>
         );
       }
-      if (error || data?.me?.error || !data?.me?.user) {
-        router.replace("/login");
-        return null;
+
+      if (authorize) {
+        if (error || data?.me?.error || !data?.me?.user) {
+          router.replace("/login");
+          return null;
+        }
+      }
+
+      if (!authorize) {
+        if (data?.me?.user) {
+          router.replace("/user");
+          return null;
+        }
       }
 
       return <WrappedComponent {...props} user={data?.me?.user} />;

@@ -18,6 +18,7 @@ import { useRouter } from "next/router";
 import { FaEyeSlash, FaEye } from "react-icons/fa";
 import { useState } from "react";
 import { setToken } from "../utils/methods";
+import WithAuth from "../hooks/withAuth";
 interface ILoginProps {}
 
 const Login: NextPage<ILoginProps> = () => {
@@ -93,4 +94,6 @@ const Login: NextPage<ILoginProps> = () => {
   );
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(Login);
+export default withUrqlClient(createUrqlClient, { ssr: false })(
+  WithAuth(Login, false)
+);

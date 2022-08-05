@@ -19,6 +19,7 @@ import { registerSchema } from "../utils/yup/auth.schema";
 import { FaEyeSlash, FaEye } from "react-icons/fa";
 import { AiOutlineArrowRight } from "react-icons/ai";
 import { useState } from "react";
+import WithAuth from "../hooks/withAuth";
 interface IRegisterProps {}
 
 const Register: NextPage<IRegisterProps> = () => {
@@ -152,4 +153,6 @@ const Register: NextPage<IRegisterProps> = () => {
   );
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(Register);
+export default withUrqlClient(createUrqlClient, { ssr: true })(
+  WithAuth(Register, false)
+);
