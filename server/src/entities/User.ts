@@ -23,7 +23,7 @@ export class User extends BaseEntity {
   @Column()
   email!: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   accessToken: string;
 
   @Column()

@@ -9,7 +9,7 @@ export const AuthMiddleWare = async (
 ) => {
   try {
     if (req.headers.authorization) {
-      const token = req.headers.authorization.replace("Bearer ", "");
+      const token = req.headers.authorization.replace("bearer ", "");
       const jwtToken = await redis.get(token);
       if (jwtToken) {
         const payload = verifyToken(jwtToken);
@@ -18,7 +18,7 @@ export const AuthMiddleWare = async (
         if (email && id) {
           req.headers.userId = id;
           req.headers.userEmail = email;
-          req.headers.isLoggedIn = "true";
+          req.headers.jwtToken = jwtToken;
         }
       }
     }

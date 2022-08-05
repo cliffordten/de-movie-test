@@ -3,7 +3,7 @@ import { loginSchema, registerSchema } from "../utils/yup/auth.schema";
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { User } from "../entities/User";
 import { UserResponse, UserInput, LoginInput, AppContext } from "../types";
-import { getToken } from "src/utils/jsontoken";
+import { getToken } from "../utils/jsontoken";
 @Resolver()
 export class userResolver {
   @Mutation(() => UserResponse)
@@ -89,12 +89,6 @@ export class userResolver {
   @Query(() => UserResponse, { nullable: true })
   async me(@Ctx() { req }: AppContext): Promise<UserResponse | undefined> {
     try {
-      console.log(
-        "%cuser.ts line:87 user, req.headers.userId",
-        "color: #007acc;",
-        req.headers.userId
-      );
-
       if (!req.headers.userId) {
         return {
           error: {
