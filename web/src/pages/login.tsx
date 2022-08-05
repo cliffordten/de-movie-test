@@ -17,6 +17,7 @@ import { useLoginMutation } from "../generated/graphql";
 import { useRouter } from "next/router";
 import { FaEyeSlash, FaEye } from "react-icons/fa";
 import { useState } from "react";
+import { setToken } from "../utils/methods";
 interface ILoginProps {}
 
 const Login: NextPage<ILoginProps> = () => {
@@ -40,12 +41,12 @@ const Login: NextPage<ILoginProps> = () => {
         onSubmit={async (values) => {
           const response = await login({ input: values });
           const data = response.data?.login;
-          console.log("%clogin.tsx line:45 data", "color: #007acc;", data);
           if (data?.error) {
             setError(data?.error.message);
             return;
           }
           if (data?.user) {
+            setToken(data?.user?.accessToken);
             router.push(`user/${data?.user.username}`);
           }
         }}

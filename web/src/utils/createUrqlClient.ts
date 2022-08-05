@@ -3,6 +3,9 @@ import { dedupExchange, fetchExchange } from "urql";
 
 import { Cache, QueryInput } from "@urql/exchange-graphcache";
 import { GetMeDocument, GetMeQuery, LoginMutation } from "../generated/graphql";
+import { getToken } from "./methods";
+
+const USER_TOKEN = getToken();
 
 export function betterUpdateQuery<Result, Query>(
   cache: Cache,
@@ -15,7 +18,11 @@ export function betterUpdateQuery<Result, Query>(
 
 export const createUrqlClient = (ssrExchange: any) => ({
   url: process.env.NEXT_PUBLIC_BACK_END_URL!,
-  credentials: "include",
+  fetchOptions: {
+    headers: {
+      authorization: `bearer ${USER_TOKEN}`,
+    },
+  },
   exchanges: [
     dedupExchange,
     cacheExchange({

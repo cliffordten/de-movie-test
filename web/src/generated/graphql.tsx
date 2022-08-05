@@ -55,6 +55,7 @@ export type QueryGetByUsernameArgs = {
 
 export type User = {
   __typename?: 'User';
+  accessToken: Scalars['String'];
   createdAt: Scalars['String'];
   email: Scalars['String'];
   id: Scalars['String'];
@@ -80,14 +81,14 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'UserResponse', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'User', email: string, username: string, updatedAt: string, id: string, createdAt: string } | null } };
+export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'UserResponse', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'User', email: string, username: string, updatedAt: string, id: string, createdAt: string, accessToken: string } | null } };
 
 export type RegisterMutationVariables = Exact<{
   input: UserInput;
 }>;
 
 
-export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'User', email: string, username: string, updatedAt: string, id: string, createdAt: string } | null } };
+export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'User', email: string, username: string, updatedAt: string, id: string, createdAt: string, accessToken: string } | null } };
 
 export type GetByUsernameQueryVariables = Exact<{
   username: Scalars['String'];
@@ -99,7 +100,7 @@ export type GetByUsernameQuery = { __typename?: 'Query', getByUsername?: { __typ
 export type GetMeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetMeQuery = { __typename?: 'Query', me?: { __typename?: 'UserResponse', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'User', email: string, username: string, updatedAt: string, id: string, createdAt: string } | null } | null };
+export type GetMeQuery = { __typename?: 'Query', me?: { __typename?: 'UserResponse', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'User', email: string, username: string, updatedAt: string, id: string, createdAt: string, accessToken: string } | null } | null };
 
 
 export const LoginDocument = gql`
@@ -115,6 +116,7 @@ export const LoginDocument = gql`
       updatedAt
       id
       createdAt
+      accessToken
     }
   }
 }
@@ -136,6 +138,7 @@ export const RegisterDocument = gql`
       updatedAt
       id
       createdAt
+      accessToken
     }
   }
 }
@@ -172,6 +175,7 @@ export const GetMeDocument = gql`
       updatedAt
       id
       createdAt
+      accessToken
     }
   }
 }

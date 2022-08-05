@@ -10,6 +10,7 @@ mutation Login($input: LoginInput!) {
       updatedAt
       id
       createdAt
+      accessToken
     }
   }
 }
