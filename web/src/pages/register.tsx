@@ -17,6 +17,7 @@ import { useRegisterMutation } from "../generated/graphql";
 import { useRouter } from "next/router";
 import { registerSchema } from "../utils/yup/auth.schema";
 import { FaEyeSlash, FaEye } from "react-icons/fa";
+import { AiOutlineArrowRight } from "react-icons/ai";
 import { useState } from "react";
 interface IRegisterProps {}
 
@@ -25,12 +26,29 @@ const Register: NextPage<IRegisterProps> = () => {
   const [show, setShow] = useState({ password: false, confirmPassword: false });
   const [, register] = useRegisterMutation();
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   return (
     <Wrapper variant="small">
       {error && (
         <Alert status="error">
           <AlertIcon />
           <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+      {success && (
+        <Alert status="success" justifyContent={"space-between"}>
+          <Box display={"flex"}>
+            <AlertIcon />
+            <AlertDescription>{success}</AlertDescription>
+          </Box>
+          <Button
+            onClick={() => router.push("/login")}
+            rightIcon={<AiOutlineArrowRight />}
+            colorScheme="teal"
+            variant="outline"
+          >
+            Login
+          </Button>
         </Alert>
       )}
       <Formik
@@ -46,10 +64,13 @@ const Register: NextPage<IRegisterProps> = () => {
           const data = response.data?.register;
           if (data?.error) {
             setError(data?.error.message);
+            setSuccess("");
             return;
           }
           if (data?.user) {
-            router.push(`user/${data?.user.username}`);
+            setError("");
+            setSuccess("Account Created!");
+            // router.push(`user/${data?.user.username}`);
           }
         }}
       >
