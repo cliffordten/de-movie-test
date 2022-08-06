@@ -3,12 +3,23 @@ import { Flex } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { ElementType } from "react";
 import { useGetMeQuery } from "../generated/graphql";
+// import { getToken } from "../utils/methods";
+
+const excludesRoutes = ["/"];
+// const USER_TOKEN = getToken();
 
 const WithAuth = (WrappedComponent: ElementType, authorize: Boolean = true) => {
   return Object.assign(
     (props: any) => {
       const router = useRouter();
       const [{ data, error, fetching }] = useGetMeQuery();
+
+      // if (!USER_TOKEN) {
+      //   if (!excludesRoutes.includes(router.pathname)) {
+      //     router.replace("/login");
+      //     return null;
+      //   }
+      // }
 
       // checks whether we are on client / browser or server.
       // If there is no login user we redirect to "/login" page.
@@ -22,8 +33,10 @@ const WithAuth = (WrappedComponent: ElementType, authorize: Boolean = true) => {
 
       if (authorize) {
         if (error || data?.me?.error || !data?.me?.user) {
-          router.replace("/login");
-          return null;
+          if (!excludesRoutes.includes(router.pathname)) {
+            router.replace("/login");
+            return null;
+          }
         }
       }
 

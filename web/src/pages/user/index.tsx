@@ -14,7 +14,7 @@ const Dashboard: NextPage = ({ user }: AppWithUserType) => {
       fontWeight="bold"
       fontSize="5xl"
     >
-      Welcome {user?.email}
+      Welcome {user?.username}
     </Flex>
   );
 };
