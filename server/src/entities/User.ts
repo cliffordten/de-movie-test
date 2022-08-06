@@ -6,7 +6,9 @@ import {
   Entity,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from "typeorm";
+import { QuizResult } from "./QuizResult";
 
 @ObjectType()
 @Entity()
@@ -29,6 +31,9 @@ export class User extends BaseEntity {
   @Column()
   password!: string;
 
+  @Field(() => Number, { nullable: true })
+  highestScore: number;
+
   @Field(() => String)
   @CreateDateColumn()
   createdAt: Date;
@@ -36,4 +41,7 @@ export class User extends BaseEntity {
   @Field(() => String)
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => QuizResult, (quizResult) => quizResult.user)
+  quizResult: QuizResult[];
 }

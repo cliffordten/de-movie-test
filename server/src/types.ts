@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import Redis from "ioredis";
 import { InputType, Field, ObjectType } from "type-graphql";
+import { QuizResult } from "./entities/QuizResult";
 import { User } from "./entities/User";
 
-// app input types
+// app input type zs
 @InputType()
 export class UserInput {
   @Field(() => String)
@@ -22,6 +23,14 @@ export class LoginInput {
   email!: string;
   @Field(() => String)
   password!: string;
+}
+
+@InputType()
+export class UserQuizResponseInput {
+  @Field(() => String)
+  questionId!: string;
+  @Field(() => Boolean)
+  response!: boolean;
 }
 
 // app object types
@@ -57,4 +66,50 @@ export class UserSessionType {
   id: string;
   @Field(() => String)
   email: string;
+}
+
+// quiz types
+
+@ObjectType()
+export class MovieType {
+  @Field(() => String)
+  movieName?: string;
+  @Field(() => String)
+  movieImage?: string;
+}
+
+@ObjectType()
+export class ActorType {
+  @Field(() => String)
+  actorName?: string;
+  @Field(() => String)
+  actorImage?: string;
+}
+
+@ObjectType()
+export class QuizType {
+  @Field(() => String)
+  id: string;
+
+  @Field(() => MovieType)
+  movie!: MovieType;
+
+  @Field(() => ActorType)
+  actor!: ActorType;
+}
+
+@ObjectType()
+export class QuizResponse {
+  @Field(() => ErrorType, { nullable: true })
+  error?: ErrorType;
+  @Field(() => QuizType, { nullable: true })
+  quiz?: QuizType;
+}
+
+@ObjectType()
+export class QuizResultResponse {
+  @Field(() => ErrorType, { nullable: true })
+  error?: ErrorType;
+  @Field(() => QuizResult, { nullable: true })
+  result?: QuizResult;
 }

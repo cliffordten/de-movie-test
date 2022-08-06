@@ -1,5 +1,5 @@
 import jwt, { JwtPayload, Secret } from "jsonwebtoken";
-import { UserSessionType } from "src/types";
+import { UserSessionType } from "../types";
 import config from "../constants";
 
 export const getToken = (data: UserSessionType) => {

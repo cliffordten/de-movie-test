@@ -2,7 +2,7 @@
 
 import users from "../data/users";
 import { graphQLRequest } from "../utils/graphqlRequest";
-import { User } from "../../src/entities/User";
+import { User } from "../../../entities/User";
 import { BaseEntity } from "typeorm";
 
 afterAll(() => {

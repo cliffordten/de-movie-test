@@ -1,10 +1,18 @@
 // import { generateHash } from "../utils/passEncrypt";
 import { loginSchema, registerSchema } from "../utils/yup/auth.schema";
-import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import {
+  Arg,
+  Ctx,
+  FieldResolver,
+  Mutation,
+  Query,
+  Resolver,
+} from "type-graphql";
 import { User } from "../entities/User";
 import { UserResponse, UserInput, LoginInput, AppContext } from "../types";
 import { getToken } from "../utils/jsontoken";
-@Resolver()
+import { QuizResult } from "../entities/QuizResult";
+@Resolver(() => User)
 export class userResolver {
   @Mutation(() => UserResponse)
   async register(@Arg("input") input: UserInput): Promise<UserResponse> {
@@ -118,5 +126,26 @@ export class userResolver {
     @Arg("username") username: string
   ): Promise<User | undefined> {
     return User.findOne({ where: { username } });
+  }
+
+  @FieldResolver(() => Number, { nullable: true })
+  async highestScore(): Promise<Number | undefined> {
+    const results = await QuizResult.find();
+    if (!results.length) {
+      return;
+    }
+    return (
+      results.sort((a, b) => a.noCorrectAnswers - b.noCorrectAnswers)[0]
+        .noCorrectAnswers * 10
+    );
+  }
+
+  @FieldResolver(() => QuizResult, { nullable: true })
+  async quizResult(): Promise<QuizResult[] | undefined> {
+    const results = await QuizResult.find();
+    if (!results.length) {
+      return;
+    }
+    return results;
   }
 }
