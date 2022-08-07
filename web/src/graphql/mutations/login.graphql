@@ -1,16 +1,10 @@
 mutation Login($input: LoginInput!) {
   login(input: $input) {
     error {
-      field
-      message
+      ...ErrorFragment
     }
     user {
-      email
-      username
-      updatedAt
-      id
-      createdAt
-      accessToken
+      ...UserFragment
     }
   }
 }

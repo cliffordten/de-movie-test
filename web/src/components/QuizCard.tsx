@@ -1,9 +1,9 @@
 import { FC, useEffect } from "react";
-import { Box, Flex, Image, Stack, Text } from "@chakra-ui/react";
+import { Badge, Box, Flex, Image, Stack, Text } from "@chakra-ui/react";
 import Countdown, { CountdownRenderProps } from "react-countdown";
 
 interface IQuizeCardProps {
-  curentScore?: string;
+  questionCount?: number;
   actor?: {
     actorName?: string;
     actorImage?: string;
@@ -12,12 +12,14 @@ interface IQuizeCardProps {
     movieName?: string;
     movieImage?: string;
   };
-  timeCount?: Date;
+  timeCount?: number;
   onCountCompleted?: Function;
+  getCurrentTime?: Function;
 }
 
 interface IRendererCountProps {
   onCompleted?: Function;
+  getCurrentTime?: Function;
 }
 
 // Renderer callback with condition
@@ -27,14 +29,15 @@ const RendererCount: FC<CountdownRenderProps & IRendererCountProps> = ({
   seconds,
   completed,
   onCompleted,
+  getCurrentTime,
 }) => {
   useEffect(() => {
     if (completed) {
       onCompleted?.();
     }
-
+    getCurrentTime?.(hours, minutes, seconds);
     return () => {};
-  }, [completed, onCompleted]);
+  }, [completed, getCurrentTime, hours, minutes, onCompleted, seconds]);
 
   if (completed) {
     // Render a complete state
@@ -57,11 +60,12 @@ const RendererCount: FC<CountdownRenderProps & IRendererCountProps> = ({
 };
 
 export const QuizeCard: FC<IQuizeCardProps> = ({
-  curentScore,
+  questionCount,
   timeCount,
   movie,
   actor,
   onCountCompleted,
+  getCurrentTime,
 }) => {
   return (
     <Box>
@@ -71,8 +75,8 @@ export const QuizeCard: FC<IQuizeCardProps> = ({
         fontWeight="bold"
         fontSize="5xl"
       >
-        <Text fontSize="3xl">Current Score</Text>
-        <Text fontSize="xl">{curentScore || "0"}</Text>
+        <Text fontSize="3xl">Questions Answered</Text>
+        <Text fontSize="xl">{questionCount || "0"}</Text>
       </Flex>
       <Flex
         justifyContent="flex-end"
@@ -84,7 +88,11 @@ export const QuizeCard: FC<IQuizeCardProps> = ({
         <Countdown
           date={timeCount || Date.now() + 60000}
           renderer={(props) => (
-            <RendererCount {...props} onCompleted={onCountCompleted} />
+            <RendererCount
+              {...props}
+              onCompleted={onCountCompleted}
+              getCurrentTime={getCurrentTime}
+            />
           )}
         />
       </Flex>
@@ -96,24 +104,31 @@ export const QuizeCard: FC<IQuizeCardProps> = ({
       >
         <Box padding={"3"} border="1px solid #e2e8f0" borderRadius="md">
           <Image
-            boxSize="300px"
+            width="300px"
+            height={"400px"}
             src={actor?.actorImage || "https://bit.ly/dan-abramov"}
             alt="Dan Abramov"
           />
-          <Stack mt={3} spacing="0">
+          <Stack mt={3} spacing="0" maxWidth={"300px"}>
             <Text fontSize="2xl">{actor?.actorName || "Lucious Lion"}</Text>
-            <Text fontSize="lg">actor name</Text>
+            <Text fontSize="lg">
+              <Badge colorScheme="green">actor name</Badge>
+            </Text>
           </Stack>
         </Box>
         <Box padding={"3"} border="1px solid #e2e8f0" borderRadius="md">
           <Image
-            boxSize="300px"
+            width="300px"
+            height={"400px"}
             src={movie?.movieImage || "https://bit.ly/dan-abramov"}
             alt="Dan Abramov"
           />
-          <Stack mt={3} spacing="0">
+          <Stack mt={3} spacing="0" maxWidth={"300px"}>
             <Text fontSize="2xl">{movie?.movieName || "Empire"}</Text>
-            <Text fontSize="lg">movie title</Text>
+            <Text fontSize="lg">
+              {" "}
+              <Badge colorScheme="purple">movie title</Badge>
+            </Text>
           </Stack>
         </Box>
       </Flex>

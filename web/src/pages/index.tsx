@@ -68,7 +68,7 @@ const Home: NextPage = ({ user }: AppWithUserType) => {
           </Stack>
         ) : (
           <Stack direction="row" spacing={4} align="center" mt={"10"}>
-            <NextLink href="/play" passHref>
+            <NextLink href="/play?start=true" passHref>
               <Button colorScheme="teal" variant="solid">
                 Start Game
               </Button>

@@ -1,0 +1,19 @@
+query GetGameQuestion {
+  getGameQuestion {
+    error {
+      field
+      message
+    }
+    quiz {
+      id
+      movie {
+        movieImage
+        movieName
+      }
+      actor {
+        actorImage
+        actorName
+      }
+    }
+  }
+}

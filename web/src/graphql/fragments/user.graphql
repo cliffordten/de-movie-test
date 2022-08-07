@@ -1,0 +1,17 @@
+fragment UserFragment on User {
+  id
+  username
+  email
+  accessToken
+  highestScore
+  createdAt
+  updatedAt
+  quizResult {
+    id
+    noCorrectAnswers
+    currentScore
+    createdAt
+    updatedAt
+    totalAnsweredQuestions
+  }
+}

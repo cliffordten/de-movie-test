@@ -1,15 +1,7 @@
 import { NextPage } from "next";
 import { Formik, Form } from "formik";
 import { Wrapper } from "../components/Wrapper";
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  Box,
-  Button,
-  InputGroup,
-  InputRightElement,
-} from "@chakra-ui/react";
+import { Box, Button, InputGroup, InputRightElement } from "@chakra-ui/react";
 import { InputField } from "../components/InputField";
 import { withUrqlClient } from "next-urql";
 import { createUrqlClient } from "../utils/createUrqlClient";
@@ -17,7 +9,6 @@ import { useRegisterMutation } from "../generated/graphql";
 import { useRouter } from "next/router";
 import { registerSchema } from "../utils/yup/auth.schema";
 import { FaEyeSlash, FaEye } from "react-icons/fa";
-import { AiOutlineArrowRight } from "react-icons/ai";
 import { useState } from "react";
 import WithAuth from "../hooks/withAuth";
 import { CustomAlert } from "../components/CustomAlert";
