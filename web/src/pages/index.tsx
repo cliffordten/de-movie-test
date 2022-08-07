@@ -33,7 +33,8 @@ const Home: NextPage = ({ user }: AppWithUserType) => {
         flex="1"
         px="20"
       >
-        <Heading as="h1" fontSize="6xl" fontWeight="bold">
+        {user && <Heading as="h2">{user?.username}</Heading>}
+        <Heading as="h1" fontSize="6xl" fontWeight="bold" mt={"3"}>
           Welcome to{" "}
           <NextLink href="/" passHref>
             <Link color="blue.600">ZeMovieQuiz !</Link>

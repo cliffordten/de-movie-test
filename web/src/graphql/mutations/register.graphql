@@ -1,13 +1,10 @@
-query GetMe {
-  me {
+mutation Register($input: UserInput!) {
+  register(input: $input) {
     error {
       ...ErrorFragment
     }
     user {
       ...UserFragment
-      quizResult {
-        ...QuizeResultFragment
-      }
     }
   }
 }

@@ -6,12 +6,4 @@ fragment UserFragment on User {
   highestScore
   createdAt
   updatedAt
-  quizResult {
-    id
-    noCorrectAnswers
-    currentScore
-    createdAt
-    updatedAt
-    totalAnsweredQuestions
-  }
 }

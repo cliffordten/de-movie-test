@@ -1,13 +1,10 @@
-query GetMe {
-  me {
+mutation Logout($input: LoginInput!) {
+  logout {
     error {
       ...ErrorFragment
     }
     user {
       ...UserFragment
-      quizResult {
-        ...QuizeResultFragment
-      }
     }
   }
 }

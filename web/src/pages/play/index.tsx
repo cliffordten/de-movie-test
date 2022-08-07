@@ -40,6 +40,7 @@ const PlayGame: NextPage = () => {
     setUserScore(
       response.data?.getUserCurrentGameResults.result?.currentScore || 0
     );
+    console.log("%cindex.tsx line:43 response", "color: #007acc;", response);
   }, [getResults, questionsAnswers]);
 
   useEffect(() => {

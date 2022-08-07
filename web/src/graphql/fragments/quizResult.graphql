@@ -1,0 +1,9 @@
+fragment QuizeResultFragment on QuizResult {
+  id
+  noCorrectAnswers
+  totalAnsweredQuestions
+  currentScore
+  userId
+  createdAt
+  updatedAt
+}

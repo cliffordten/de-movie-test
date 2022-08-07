@@ -13,7 +13,9 @@ const WithAuth = (WrappedComponent: ElementType, authorize: Boolean = true) => {
   return Object.assign(
     (props: any) => {
       const router = useRouter();
-      const [{ data, error, fetching }] = useGetMeQuery();
+      const [{ data, error, fetching }] = useGetMeQuery({
+        requestPolicy: "network-only",
+      });
 
       // if (!USER_TOKEN) {
       //   if (!excludesRoutes.includes(router.pathname)) {
