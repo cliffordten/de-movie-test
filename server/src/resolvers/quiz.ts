@@ -42,14 +42,8 @@ export class quizResolver {
       const movie = gameInfo.movie;
       const quizAnswer = { id: quizeId, ans: gameInfo.correctAnswer };
 
-      console.log(gameInfo.correctAnswer, gameInfo.even);
-      console.log({
-        actorName: actor.name,
-        movieName: movie.title,
-      });
-
       //store answers to user question in redis
-      if (actor.name && movie.title) {
+      if (actor.name && (movie.title || movie.name)) {
         await redis.rpush(userId, JSON.stringify(quizAnswer));
       }
 
@@ -62,7 +56,7 @@ export class quizResolver {
           },
           movie: {
             movieImage: imageBaseUrl + movie.poster_path,
-            movieName: movie.title,
+            movieName: movie.title || movie.name,
           },
         },
       };
@@ -114,17 +108,15 @@ export class quizResolver {
         }
       });
 
-      const result = await QuizResult.create({
-        noCorrectAnswers,
-        totalAnsweredQuestions: input.length,
-        userId,
-      }).save();
-
       await redis.del(userId);
 
       console.log(noCorrectAnswers, "noCorrectAnswers", userQuestions.length);
       return {
-        result,
+        result: await QuizResult.create({
+          noCorrectAnswers,
+          totalAnsweredQuestions: input.length,
+          userId,
+        }).save(),
       };
     } catch (error) {
       return {

@@ -26,22 +26,22 @@ services:
     depends_on:
       - starter-db
 
-  starter-web:
-    build: ./web
-    container_name: starter-web
-    env_file:
-      - ./web/.env.local
-    expose:
-      - "3000"
-    ports:
-      - "3000:3000"
-    networks:
-      - starter-net
-    depends_on:
-      - starter-server
-    volumes:
-      - ./web:/app
-    entrypoint: ["yarn", "dev"]
+  # starter-web:
+  #   build: ./web
+  #   container_name: starter-web
+  #   env_file:
+  #     - ./web/.env.local
+  #   expose:
+  #     - "3000"
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - starter-net
+  #   depends_on:
+  #     - starter-server
+  #   volumes:
+  #     - ./web:/app
+  #   entrypoint: ["yarn", "dev"]
 
   starter-server:
     build: ./server

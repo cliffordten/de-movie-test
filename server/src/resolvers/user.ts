@@ -176,7 +176,7 @@ export class userResolver {
       return 0;
     }
     return (
-      results.sort((a, b) => a.noCorrectAnswers - b.noCorrectAnswers)[0]
+      results.sort((a, b) => b.noCorrectAnswers - a.noCorrectAnswers)[0]
         .noCorrectAnswers * 10
     );
   }
