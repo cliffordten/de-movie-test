@@ -7,6 +7,7 @@ import {
   Mutation,
   Query,
   Resolver,
+  Root,
 } from "type-graphql";
 import { User } from "../entities/User";
 import {
@@ -53,10 +54,7 @@ export class userResolver {
   }
 
   @Mutation(() => UserResponse)
-  async login(
-    @Arg("input") input: LoginInput,
-    @Ctx() { redis }: AppContext
-  ): Promise<UserResponse> {
+  async login(@Arg("input") input: LoginInput): Promise<UserResponse> {
     try {
       await loginSchema.validate(input);
 
@@ -79,13 +77,6 @@ export class userResolver {
           },
         };
       }
-
-      const accessToken = getToken({ id: user.id, email: user.email });
-
-      user.accessToken = accessToken;
-
-      //store user token
-      await redis.set(accessToken, accessToken);
 
       return {
         user,
@@ -199,8 +190,20 @@ export class userResolver {
 
   @FieldResolver(() => String, { nullable: true })
   async accessToken(
-    @Ctx() { req }: AppContext
+    @Root() user: User,
+    @Ctx() { req, redis }: AppContext
   ): Promise<String | { error: ErrorType } | undefined> {
+    // set token if Login mutation is run
+    if (req.body.operationName == "Login") {
+      const accessToken = getToken({ id: user.id, email: user.email });
+
+      //store user token in redis
+      await redis.set(accessToken, accessToken);
+
+      return accessToken;
+    }
+
+    // get the token from the headers
     const isError = checkIfUserSessionExist(req.headers);
     if (isError) {
       return isError;

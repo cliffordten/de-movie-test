@@ -4,7 +4,7 @@ import { InputType, Field, ObjectType } from "type-graphql";
 import { QuizResult } from "./entities/QuizResult";
 import { User } from "./entities/User";
 
-// app input types
+// app input typess
 @InputType()
 export class UserInput {
   @Field(() => String)
