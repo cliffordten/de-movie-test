@@ -13,3 +13,10 @@ export const setToken = (token: string) => {
   }
   return null;
 };
+
+export const removeToken = () => {
+  if (typeof window !== "undefined") {
+    return localStorage.removeItem(config.APP_TOKEN_KEY);
+  }
+  return null;
+};

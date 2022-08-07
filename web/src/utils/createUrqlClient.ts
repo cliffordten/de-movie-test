@@ -2,7 +2,12 @@ import { cacheExchange } from "@urql/exchange-graphcache";
 import { dedupExchange, fetchExchange } from "urql";
 
 import { Cache, QueryInput } from "@urql/exchange-graphcache";
-import { GetMeDocument, GetMeQuery, LoginMutation } from "../generated/graphql";
+import {
+  GetMeDocument,
+  GetMeQuery,
+  LoginMutation,
+  LogoutMutation,
+} from "../generated/graphql";
 import { getToken } from "./methods";
 
 const USER_TOKEN = getToken();
@@ -44,6 +49,14 @@ export const createUrqlClient = (ssrExchange: any) => ({
                   };
                 }
               }
+            );
+          },
+          logout: (_result, _args, cache, _info) => {
+            betterUpdateQuery<LogoutMutation, GetMeQuery>(
+              cache,
+              { query: GetMeDocument },
+              _result,
+              () => ({ me: null })
             );
           },
         },

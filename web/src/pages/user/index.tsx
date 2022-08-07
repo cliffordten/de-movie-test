@@ -18,8 +18,16 @@ import {
 import { AppWithUserType } from "../../utils/interface/pages";
 import WithAuth from "../../hooks/withAuth";
 import NextLink from "next/link";
+import { removeToken } from "../../utils/methods";
+import { useLogoutMutation } from "../../generated/graphql";
 
 const Dashboard: NextPage = ({ user }: AppWithUserType) => {
+  const [, logout] = useLogoutMutation();
+
+  const logoutUser = () => {
+    logout();
+    removeToken();
+  };
   return (
     <Flex
       alignItems="center"
@@ -40,7 +48,7 @@ const Dashboard: NextPage = ({ user }: AppWithUserType) => {
               Start Game
             </Button>
           </NextLink>
-          <Button colorScheme="teal" variant="outline">
+          <Button colorScheme="teal" variant="outline" onClick={logoutUser}>
             Logout
           </Button>
         </Stack>
