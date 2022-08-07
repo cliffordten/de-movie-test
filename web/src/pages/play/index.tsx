@@ -67,12 +67,12 @@ const PlayGame: NextPage = () => {
   ]);
 
   const onTimeOut = async () => {
-    setIsGameOver(true);
-    setShouldExit(false);
     const response = await getResults({ input: questionsAnswers });
     setUserScore(
       response.data?.getUserCurrentGameResults.result?.currentScore || 0
     );
+    setShouldExit(false);
+    setIsGameOver(true);
   };
 
   if (isGameOver) {

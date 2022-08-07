@@ -20,3 +20,12 @@ export const removeToken = () => {
   }
   return null;
 };
+
+export const formatDate = (d: number) => {
+  let date = new Date(d).toLocaleDateString("en-us", { day: "numeric" });
+  let month = new Date(d).toLocaleDateString("en-us", { month: "short" });
+  let year = new Date(d).toLocaleDateString("en-us", { year: "numeric" });
+  const formattedDate = `${date} ${month} ${year}`;
+
+  return formattedDate;
+};

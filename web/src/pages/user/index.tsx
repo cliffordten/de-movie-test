@@ -18,7 +18,7 @@ import {
 import { AppWithUserType } from "../../utils/interface/pages";
 import WithAuth from "../../hooks/withAuth";
 import NextLink from "next/link";
-import { removeToken } from "../../utils/methods";
+import { formatDate, removeToken } from "../../utils/methods";
 import { useLogoutMutation } from "../../generated/graphql";
 
 const Dashboard: NextPage = ({ user }: AppWithUserType) => {
@@ -34,6 +34,7 @@ const Dashboard: NextPage = ({ user }: AppWithUserType) => {
       justifyContent="center"
       fontSize="5xl"
       height={"100vh"}
+      overflow="hidden"
     >
       <Flex
         alignItems="center"
@@ -52,41 +53,49 @@ const Dashboard: NextPage = ({ user }: AppWithUserType) => {
             Logout
           </Button>
         </Stack>
-      </Flex>
-      {user?.quizResult?.length ? (
-        <Box>
-          <Flex
-            justifyContent="space-between"
-            alignItems={"center"}
-            fontSize="5xl"
-          >
-            <Text fontSize="2xl">Your Games</Text>
-            <Text fontSize="xl">Highest Score : {user.highestScore}</Text>
-          </Flex>
-          <TableContainer>
-            <Table variant="simple">
-              <Thead>
-                <Tr>
-                  <Th>No</Th>
-                  <Th>Quiz Attempts in 60 secs</Th>
-                  <Th>Correct Answers</Th>
-                  <Th>Score</Th>
-                  <Th>Date</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {user.quizResult.map((item) => (
-                  <Tr key={item.id}>
-                    <Td>inches</Td>
-                    <Td>millimetres (mm)</Td>
-                    <Td isNumeric>25.4</Td>
+        {user?.quizResult?.length ? (
+          <Box mt={6} maxHeight="60vh" overflowY={"scroll"} p="3" px={20}>
+            <Flex
+              justifyContent="space-between"
+              alignItems={"center"}
+              fontSize="5xl"
+            >
+              <Text fontSize="2xl">Your Games</Text>
+              <Text fontSize="lg">Highest Score : {user.highestScore}</Text>
+            </Flex>
+            <TableContainer mt={3}>
+              <Table variant="simple">
+                <Thead>
+                  <Tr fontWeight="bold">
+                    <Th fontSize="md">No</Th>
+                    <Th fontSize="md">Attempts in 60 secs</Th>
+                    <Th fontSize="md">Correct Answers</Th>
+                    <Th fontSize="md">Score</Th>
+                    <Th fontSize="md">Date</Th>
                   </Tr>
-                ))}
-              </Tbody>
-            </Table>
-          </TableContainer>
-        </Box>
-      ) : null}
+                </Thead>
+                <Tbody>
+                  {user.quizResult
+                    .map((item, inx) => (
+                      <Tr key={item.id} fontWeight="normal">
+                        <Td fontSize="lg">{inx + 1}</Td>
+                        <Td fontSize="lg">
+                          {item.totalAnsweredQuestions} Questions
+                        </Td>
+                        <Td fontSize="lg">{item.noCorrectAnswers}</Td>
+                        <Td fontSize="lg">{item.currentScore}</Td>
+                        <Td fontSize="lg">
+                          {formatDate(Number(item.createdAt))}
+                        </Td>
+                      </Tr>
+                    ))
+                    .reverse()}
+                </Tbody>
+              </Table>
+            </TableContainer>
+          </Box>
+        ) : null}
+      </Flex>
     </Flex>
   );
 };
