@@ -1,15 +1,7 @@
 import { NextPage } from "next";
 import { Formik, Form } from "formik";
 import { Wrapper } from "../components/Wrapper";
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  Box,
-  Button,
-  InputGroup,
-  InputRightElement,
-} from "@chakra-ui/react";
+import { Box, Button, InputGroup, InputRightElement } from "@chakra-ui/react";
 import { InputField } from "../components/InputField";
 import { withUrqlClient } from "next-urql";
 import { createUrqlClient } from "../utils/createUrqlClient";
@@ -19,6 +11,7 @@ import { FaEyeSlash, FaEye } from "react-icons/fa";
 import { useState } from "react";
 import { setToken } from "../utils/methods";
 import WithAuth from "../hooks/withAuth";
+import { CustomAlert } from "../components/CustomAlert";
 interface ILoginProps {}
 
 const Login: NextPage<ILoginProps> = () => {
@@ -28,12 +21,7 @@ const Login: NextPage<ILoginProps> = () => {
   const [error, setError] = useState("");
   return (
     <Wrapper variant="small">
-      {error && (
-        <Alert status="error">
-          <AlertIcon />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+      {error && <CustomAlert message={error} />}
       <Formik
         initialValues={{
           email: "",
@@ -47,8 +35,8 @@ const Login: NextPage<ILoginProps> = () => {
             return;
           }
           if (data?.user) {
-            setToken(data?.user?.accessToken);
-            router.push(`user/${data?.user.username}`);
+            setToken(data?.user?.accessToken || "");
+            router.push(`/`);
           }
         }}
       >

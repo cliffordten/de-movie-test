@@ -20,6 +20,7 @@ import { FaEyeSlash, FaEye } from "react-icons/fa";
 import { AiOutlineArrowRight } from "react-icons/ai";
 import { useState } from "react";
 import WithAuth from "../hooks/withAuth";
+import { CustomAlert } from "../components/CustomAlert";
 interface IRegisterProps {}
 
 const Register: NextPage<IRegisterProps> = () => {
@@ -30,27 +31,14 @@ const Register: NextPage<IRegisterProps> = () => {
   const [success, setSuccess] = useState("");
   return (
     <Wrapper variant="small">
-      {error && (
-        <Alert status="error">
-          <AlertIcon />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+      {error && <CustomAlert message={error} />}
       {success && (
-        <Alert status="success" justifyContent={"space-between"}>
-          <Box display={"flex"}>
-            <AlertIcon />
-            <AlertDescription>{success}</AlertDescription>
-          </Box>
-          <Button
-            onClick={() => router.push("/login")}
-            rightIcon={<AiOutlineArrowRight />}
-            colorScheme="teal"
-            variant="outline"
-          >
-            Login
-          </Button>
-        </Alert>
+        <CustomAlert
+          onClick={() => router.push("/login")}
+          message={success}
+          status="success"
+          bottonText="Login"
+        />
       )}
       <Formik
         initialValues={{
@@ -59,6 +47,8 @@ const Register: NextPage<IRegisterProps> = () => {
           password: "",
           confirmPassword: "",
         }}
+        validateOnChange={false}
+        validateOnBlur={false}
         validationSchema={registerSchema}
         onSubmit={async (values) => {
           const response = await register({ input: values });

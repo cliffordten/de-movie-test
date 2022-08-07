@@ -2,6 +2,7 @@
 import { Flex } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { ElementType } from "react";
+import { CustomAlert } from "../components/CustomAlert";
 import { useGetMeQuery } from "../generated/graphql";
 // import { getToken } from "../utils/methods";
 
@@ -33,6 +34,13 @@ const WithAuth = (WrappedComponent: ElementType, authorize: Boolean = true) => {
 
       if (authorize) {
         if (error || data?.me?.error || !data?.me?.user) {
+          if (data?.me?.error?.field == "sessionExpired") {
+            <CustomAlert
+              onClick={() => router.push("/login")}
+              message={data?.me?.error?.message}
+              bottonText="Login"
+            />;
+          }
           if (!excludesRoutes.includes(router.pathname)) {
             router.replace("/login");
             return null;
