@@ -24,6 +24,7 @@ export class UserInput {
 export class LoginInput {
   @Field(() => String)
   email!: string;
+
   @Field(() => String)
   password!: string;
 }
@@ -32,6 +33,7 @@ export class LoginInput {
 export class UserQuizResponseInput {
   @Field(() => String)
   questionId!: string;
+
   @Field(() => Boolean)
   response!: boolean;
 }
@@ -41,8 +43,10 @@ export class UserQuizResponseInput {
 export class AppContext {
   @Field(() => Request)
   req!: Request;
+
   @Field(() => Response)
   res!: Response;
+
   @Field(() => Redis)
   redis!: Redis;
 }
@@ -51,6 +55,7 @@ export class AppContext {
 export class ErrorType {
   @Field(() => String, { nullable: true })
   field?: string;
+
   @Field(() => String)
   message!: string;
 }
@@ -67,6 +72,7 @@ export class UserResponse {
 export class UserSessionType {
   @Field(() => String)
   id: string;
+
   @Field(() => String)
   email: string;
 }
@@ -115,4 +121,13 @@ export class QuizResultResponse {
   error?: ErrorType;
   @Field(() => QuizResult, { nullable: true })
   result?: QuizResult;
+}
+
+@ObjectType()
+export class UserResultResponse {
+  @Field(() => ErrorType, { nullable: true })
+  error?: ErrorType;
+
+  @Field(() => [QuizResult], { nullable: true })
+  result?: QuizResult[];
 }

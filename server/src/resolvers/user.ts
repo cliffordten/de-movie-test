@@ -142,7 +142,7 @@ export class userResolver {
       where: { user: { id: req.headers.userId } },
     });
     if (!results.length) {
-      return;
+      return 0;
     }
     return (
       results.sort((a, b) => a.noCorrectAnswers - b.noCorrectAnswers)[0]
@@ -150,7 +150,7 @@ export class userResolver {
     );
   }
 
-  @FieldResolver(() => QuizResult, { nullable: true })
+  @FieldResolver(() => [QuizResult], { nullable: true })
   async quizResult(
     @Ctx() { req }: AppContext
   ): Promise<QuizResult[] | { error: ErrorType } | undefined> {
@@ -159,12 +159,22 @@ export class userResolver {
       return isError;
     }
 
-    const results = await QuizResult.find({
+    const result = await QuizResult.find({
       where: { user: { id: req.headers.userId } },
     });
-    if (!results.length) {
-      return;
+
+    return result.length ? result : [];
+  }
+
+  @FieldResolver(() => String, { nullable: true })
+  async accessToken(
+    @Ctx() { req }: AppContext
+  ): Promise<String | { error: ErrorType } | undefined> {
+    const isError = checkIfUserSessionExist(req.headers);
+    if (isError) {
+      return isError;
     }
-    return results;
+
+    return req.headers.jwtToken as string;
   }
 }

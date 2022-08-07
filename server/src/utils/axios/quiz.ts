@@ -71,6 +71,7 @@ export const getGameInfo = async (): Promise<any> => {
 
     // return actor and movie with correct answer for odds random number
     if (generateRandomNumber(1, 2) == 1) {
+      console.log("%cquiz.ts line:74 actor", "color: #007acc;", actor);
       return { ...actor, correctAnswer: true, even: false };
     }
 

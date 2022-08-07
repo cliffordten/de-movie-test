@@ -42,6 +42,7 @@ export class User extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @Field(() => [QuizResult])
   @OneToMany(() => QuizResult, (quizResult) => quizResult.user)
   quizResult: QuizResult[];
 }

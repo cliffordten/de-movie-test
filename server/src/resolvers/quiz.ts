@@ -1,24 +1,33 @@
 import { getGameInfo } from "../utils/axios/quiz";
-import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import {
+  Arg,
+  Ctx,
+  FieldResolver,
+  Mutation,
+  Query,
+  Resolver,
+} from "type-graphql";
 import {
   AppContext,
   ErrorType,
   QuizResponse,
   QuizResultResponse,
   UserQuizResponseInput,
+  UserResultResponse,
 } from "../types";
 import { randomUUID } from "crypto";
 import { QuizResult } from "../entities/QuizResult";
 import { checkIfUserSessionExist } from "../utils/jsontoken";
+import { User } from "../entities/User";
 
 const imageBaseUrl = "https://image.tmdb.org/t/p/w220_and_h330_face";
 
-@Resolver()
+@Resolver(QuizResult)
 export class quizResolver {
   @Query(() => QuizResponse, { nullable: true })
   async getGameQuestion(
     @Ctx() { req, redis }: AppContext
-  ): Promise<QuizResponse | undefined> {
+  ): Promise<QuizResponse> {
     try {
       const userId = req.headers.userId as string;
 
@@ -71,7 +80,7 @@ export class quizResolver {
   async getUserCurrentGameResults(
     @Arg("input", () => [UserQuizResponseInput]) input: UserQuizResponseInput[],
     @Ctx() { req, redis }: AppContext
-  ): Promise<QuizResultResponse | undefined> {
+  ): Promise<QuizResultResponse> {
     try {
       const userId = req.headers.userId as string;
 
@@ -105,7 +114,10 @@ export class quizResolver {
         }
       });
 
-      const result = await QuizResult.create({ noCorrectAnswers }).save();
+      const result = await QuizResult.create({
+        noCorrectAnswers,
+        totalAnsweredQuestions: input.length,
+      }).save();
 
       await redis.ltrim(userId, 0, -1);
 
@@ -124,17 +136,21 @@ export class quizResolver {
     }
   }
 
-  @Query(() => QuizResult)
+  @Query(() => UserResultResponse)
   async getAllUserGameResults(
     @Ctx() { req }: AppContext
-  ): Promise<QuizResult[] | { error: ErrorType } | undefined> {
+  ): Promise<UserResultResponse> {
     try {
       const isError = checkIfUserSessionExist(req.headers);
       if (isError) {
         return isError;
       }
 
-      return QuizResult.find({ where: { user: { id: req.headers.userId } } });
+      const result = await QuizResult.find({
+        where: { user: { id: req.headers.userId } },
+      });
+
+      return { result: result.length ? result : [] };
     } catch (error) {
       return {
         error: {
@@ -143,5 +159,19 @@ export class quizResolver {
         },
       };
     }
+  }
+
+  @FieldResolver(() => User, { nullable: true })
+  async user(
+    @Ctx() { req }: AppContext
+  ): Promise<User | { error: ErrorType } | undefined> {
+    const isError = checkIfUserSessionExist(req.headers);
+    if (isError) {
+      return isError;
+    }
+
+    const userId = req.headers.userId as string;
+
+    return User.findOne(userId);
   }
 }

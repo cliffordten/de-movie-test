@@ -13,27 +13,32 @@ import { User } from "./User";
 @ObjectType()
 @Entity()
 export class QuizResult extends BaseEntity {
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 
-  @Field(() => Number)
+  @Field(() => Number, { nullable: true })
   @Column()
   noCorrectAnswers!: number;
 
-  @Field(() => Number)
+  @Field(() => Number, { nullable: true })
+  @Column()
+  totalAnsweredQuestions!: number;
+
+  @Field(() => Number, { nullable: true })
   currentScore(): number {
     return this.noCorrectAnswers ? this.noCorrectAnswers * 10 : 0;
   }
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @CreateDateColumn()
   createdAt: Date;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @Field(() => User)
   @ManyToOne(() => User, (user) => user.quizResult)
   user: User;
 }
