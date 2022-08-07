@@ -24,6 +24,7 @@ const PlayGame: NextPage = ({ user }: AppWithUserType) => {
   const timeCount = useRef(Date.now() + 60000);
   const [{ data, error, fetching }, executeFetch] = useGetGameQuestionQuery({
     pause: true,
+    requestPolicy: "network-only",
   });
 
   useShouldExitPage(shouldExit);
@@ -42,7 +43,7 @@ const PlayGame: NextPage = ({ user }: AppWithUserType) => {
     return () => {};
   }, []);
 
-  console.log(fetching, data?.getGameQuestion?.quiz);
+  console.log(fetching, data?.getGameQuestion?.quiz, data?.__typename);
 
   useEffect(() => {
     if (data?.getGameQuestion?.quiz) {
