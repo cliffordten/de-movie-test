@@ -117,12 +117,12 @@ export class quizResolver {
       const result = await QuizResult.create({
         noCorrectAnswers,
         totalAnsweredQuestions: input.length,
+        userId,
       }).save();
 
-      await redis.ltrim(userId, 0, -1);
+      await redis.del(userId);
 
-      console.log(noCorrectAnswers, "noCorrectAnswers");
-
+      console.log(noCorrectAnswers, "noCorrectAnswers", userQuestions.length);
       return {
         result,
       };
@@ -136,7 +136,7 @@ export class quizResolver {
     }
   }
 
-  @Query(() => UserResultResponse)
+  @Query(() => UserResultResponse, { nullable: true })
   async getAllUserGameResults(
     @Ctx() { req }: AppContext
   ): Promise<UserResultResponse> {

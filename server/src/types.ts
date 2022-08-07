@@ -4,7 +4,7 @@ import { InputType, Field, ObjectType } from "type-graphql";
 import { QuizResult } from "./entities/QuizResult";
 import { User } from "./entities/User";
 
-// app input type
+// app input types
 @InputType()
 export class UserInput {
   @Field(() => String)
@@ -64,6 +64,7 @@ export class ErrorType {
 export class UserResponse {
   @Field(() => ErrorType, { nullable: true })
   error?: ErrorType;
+
   @Field(() => User, { nullable: true })
   user?: User;
 }
@@ -83,6 +84,7 @@ export class UserSessionType {
 export class MovieType {
   @Field(() => String, { nullable: true })
   movieName?: string;
+
   @Field(() => String, { nullable: true })
   movieImage?: string;
 }
@@ -91,6 +93,7 @@ export class MovieType {
 export class ActorType {
   @Field(() => String, { nullable: true })
   actorName?: string;
+
   @Field(() => String, { nullable: true })
   actorImage?: string;
 }
@@ -111,6 +114,7 @@ export class QuizType {
 export class QuizResponse {
   @Field(() => ErrorType, { nullable: true })
   error?: ErrorType;
+
   @Field(() => QuizType, { nullable: true })
   quiz?: QuizType;
 }
@@ -119,6 +123,7 @@ export class QuizResponse {
 export class QuizResultResponse {
   @Field(() => ErrorType, { nullable: true })
   error?: ErrorType;
+
   @Field(() => QuizResult, { nullable: true })
   result?: QuizResult;
 }

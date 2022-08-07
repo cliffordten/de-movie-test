@@ -100,6 +100,37 @@ export class userResolver {
     }
   }
 
+  @Mutation(() => UserResponse)
+  async logout(@Ctx() { redis, req }: AppContext): Promise<UserResponse> {
+    try {
+      const isError = checkIfUserSessionExist(req.headers);
+      if (isError) {
+        return isError;
+      }
+
+      const userId = req.headers.userId as string;
+
+      const user = await User.findOne(userId);
+
+      //remove user token
+      await redis.del(req.headers.jwtToken as string);
+
+      //remove user games
+      redis.del(userId);
+
+      return {
+        user,
+      };
+    } catch (error) {
+      return {
+        error: {
+          field: error.path,
+          message: error.message || "Internal Server Error",
+        },
+      };
+    }
+  }
+
   @Query(() => UserResponse, { nullable: true })
   async me(@Ctx() { req }: AppContext): Promise<UserResponse | undefined> {
     try {

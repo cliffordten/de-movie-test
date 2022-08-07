@@ -30,6 +30,10 @@ export class QuizResult extends BaseEntity {
     return this.noCorrectAnswers ? this.noCorrectAnswers * 10 : 0;
   }
 
+  @Field(() => String)
+  @Column()
+  userId: string;
+
   @Field(() => String, { nullable: true })
   @CreateDateColumn()
   createdAt: Date;
