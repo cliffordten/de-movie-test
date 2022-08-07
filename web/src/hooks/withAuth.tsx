@@ -50,7 +50,7 @@ const WithAuth = (WrappedComponent: ElementType, authorize: Boolean = true) => {
 
       if (!authorize) {
         if (data?.me?.user) {
-          router.replace("/user");
+          router.replace("/");
           return null;
         }
       }

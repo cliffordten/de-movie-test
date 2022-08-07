@@ -6,7 +6,7 @@ import { QuizeCard } from "../../components/QuizCard";
 import { GiCrossMark } from "react-icons/gi";
 import { BsEmojiHeartEyes } from "react-icons/bs";
 import { useShouldExitPage } from "../../hooks/useShouldExitPage";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import {
   useGetGameQuestionQuery,
@@ -35,6 +35,13 @@ const PlayGame: NextPage = () => {
 
   const router = useRouter();
 
+  const fetchGameResult = useCallback(async () => {
+    const response = await getResults({ input: questionsAnswers });
+    setUserScore(
+      response.data?.getUserCurrentGameResults.result?.currentScore || 0
+    );
+  }, [getResults, questionsAnswers]);
+
   useEffect(() => {
     if (!router.query.start) {
       alert("Please click the start button to begin the game");
@@ -47,8 +54,6 @@ const PlayGame: NextPage = () => {
     return () => {};
   }, []);
 
-  console.log(fetching, data?.getGameQuestion?.quiz, data?.__typename);
-
   useEffect(() => {
     if (data?.getGameQuestion?.quiz) {
       setCurrentQuestion(data?.getGameQuestion?.quiz);
@@ -56,6 +61,7 @@ const PlayGame: NextPage = () => {
 
     if (error || data?.getGameQuestion?.error) {
       setShouldExit(false);
+      fetchGameResult();
     }
 
     return () => {};
@@ -63,14 +69,12 @@ const PlayGame: NextPage = () => {
     data?.getGameQuestion?.error,
     data?.getGameQuestion?.quiz,
     error,
+    fetchGameResult,
     router,
   ]);
 
   const onTimeOut = async () => {
-    const response = await getResults({ input: questionsAnswers });
-    setUserScore(
-      response.data?.getUserCurrentGameResults.result?.currentScore || 0
-    );
+    await fetchGameResult();
     setShouldExit(false);
     setIsGameOver(true);
   };

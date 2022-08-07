@@ -27,6 +27,7 @@ const Dashboard: NextPage = ({ user }: AppWithUserType) => {
   const logoutUser = () => {
     logout();
     removeToken();
+    window.location.reload();
   };
   return (
     <Flex

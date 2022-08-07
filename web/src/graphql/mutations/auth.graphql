@@ -1,0 +1,77 @@
+mutation Register($input: UserInput!) {
+  register(input: $input) {
+    error {
+      field
+      message
+    }
+    user {
+      id
+      username
+      email
+      accessToken
+      highestScore
+      createdAt
+      updatedAt
+      quizResult {
+        id
+        noCorrectAnswers
+        currentScore
+        createdAt
+        updatedAt
+        totalAnsweredQuestions
+      }
+    }
+  }
+}
+
+mutation Login($input: LoginInput!) {
+  login(input: $input) {
+    error {
+      field
+      message
+    }
+    user {
+      id
+      username
+      email
+      accessToken
+      highestScore
+      createdAt
+      updatedAt
+      quizResult {
+        id
+        noCorrectAnswers
+        currentScore
+        createdAt
+        updatedAt
+        totalAnsweredQuestions
+      }
+    }
+  }
+}
+
+mutation Logout($input: LoginInput!) {
+  logout {
+    error {
+      field
+      message
+    }
+    user {
+      id
+      username
+      email
+      accessToken
+      highestScore
+      createdAt
+      updatedAt
+      quizResult {
+        id
+        noCorrectAnswers
+        currentScore
+        createdAt
+        updatedAt
+        totalAnsweredQuestions
+      }
+    }
+  }
+}

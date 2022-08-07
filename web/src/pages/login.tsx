@@ -6,7 +6,6 @@ import { InputField } from "../components/InputField";
 import { withUrqlClient } from "next-urql";
 import { createUrqlClient } from "../utils/createUrqlClient";
 import { useLoginMutation } from "../generated/graphql";
-import { useRouter } from "next/router";
 import { FaEyeSlash, FaEye } from "react-icons/fa";
 import { useState } from "react";
 import { setToken } from "../utils/methods";
@@ -15,7 +14,6 @@ import { CustomAlert } from "../components/CustomAlert";
 interface ILoginProps {}
 
 const Login: NextPage<ILoginProps> = () => {
-  const router = useRouter();
   const [show, setShow] = useState(false);
   const [, login] = useLoginMutation();
   const [error, setError] = useState("");
@@ -36,7 +34,7 @@ const Login: NextPage<ILoginProps> = () => {
           }
           if (data?.user) {
             setToken(data?.user?.accessToken || "");
-            router.push(`/`);
+            window.location.reload();
           }
         }}
       >
