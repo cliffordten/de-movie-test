@@ -8,3 +8,25 @@ mutation Register($input: UserInput!) {
     }
   }
 }
+
+mutation Login($input: LoginInput!) {
+  login(input: $input) {
+    error {
+      ...ErrorFragment
+    }
+    user {
+      ...UserFragment
+    }
+  }
+}
+
+mutation Logout($input: LoginInput!) {
+  logout {
+    error {
+      ...ErrorFragment
+    }
+    user {
+      ...UserFragment
+    }
+  }
+}

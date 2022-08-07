@@ -42,6 +42,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   getUserCurrentGameResults: QuizResultResponse;
   login: UserResponse;
+  logout: UserResponse;
   register: UserResponse;
 };
 
@@ -62,7 +63,7 @@ export type MutationRegisterArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  getAllUserGameResults: UserResultResponse;
+  getAllUserGameResults?: Maybe<UserResultResponse>;
   getByUsername?: Maybe<User>;
   getGameQuestion?: Maybe<QuizResponse>;
   me?: Maybe<UserResponse>;
@@ -143,12 +144,12 @@ export type ErrorFragmentFragment = { __typename?: 'ErrorType', field?: string |
 
 export type UserFragmentFragment = { __typename?: 'User', id: string, username: string, email: string, accessToken?: string | null, highestScore?: number | null, createdAt: string, updatedAt: string, quizResult: Array<{ __typename?: 'QuizResult', id?: string | null, noCorrectAnswers?: number | null, currentScore?: number | null, createdAt?: string | null, updatedAt?: string | null, totalAnsweredQuestions?: number | null }> };
 
-export type LoginMutationVariables = Exact<{
-  input: LoginInput;
+export type GetUserQuizResponseMutationVariables = Exact<{
+  input: Array<UserQuizResponseInput> | UserQuizResponseInput;
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'UserResponse', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'User', id: string, username: string, email: string, accessToken?: string | null, highestScore?: number | null, createdAt: string, updatedAt: string, quizResult: Array<{ __typename?: 'QuizResult', id?: string | null, noCorrectAnswers?: number | null, currentScore?: number | null, createdAt?: string | null, updatedAt?: string | null, totalAnsweredQuestions?: number | null }> } | null } };
+export type GetUserQuizResponseMutation = { __typename?: 'Mutation', getUserCurrentGameResults: { __typename?: 'QuizResultResponse', error?: { __typename?: 'ErrorType', message: string, field?: string | null } | null, result?: { __typename?: 'QuizResult', id?: string | null, noCorrectAnswers?: number | null, totalAnsweredQuestions?: number | null, currentScore?: number | null, updatedAt?: string | null, createdAt?: string | null, user: { __typename?: 'User', id: string, username: string, email: string, accessToken?: string | null, highestScore?: number | null, createdAt: string, updatedAt: string, quizResult: Array<{ __typename?: 'QuizResult', id?: string | null, noCorrectAnswers?: number | null, currentScore?: number | null, createdAt?: string | null, updatedAt?: string | null, totalAnsweredQuestions?: number | null }> } } | null } };
 
 export type RegisterMutationVariables = Exact<{
   input: UserInput;
@@ -156,6 +157,20 @@ export type RegisterMutationVariables = Exact<{
 
 
 export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'User', id: string, username: string, email: string, accessToken?: string | null, highestScore?: number | null, createdAt: string, updatedAt: string, quizResult: Array<{ __typename?: 'QuizResult', id?: string | null, noCorrectAnswers?: number | null, currentScore?: number | null, createdAt?: string | null, updatedAt?: string | null, totalAnsweredQuestions?: number | null }> } | null } };
+
+export type LoginMutationVariables = Exact<{
+  input: LoginInput;
+}>;
+
+
+export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'UserResponse', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'User', id: string, username: string, email: string, accessToken?: string | null, highestScore?: number | null, createdAt: string, updatedAt: string, quizResult: Array<{ __typename?: 'QuizResult', id?: string | null, noCorrectAnswers?: number | null, currentScore?: number | null, createdAt?: string | null, updatedAt?: string | null, totalAnsweredQuestions?: number | null }> } | null } };
+
+export type LogoutMutationVariables = Exact<{
+  input: LoginInput;
+}>;
+
+
+export type LogoutMutation = { __typename?: 'Mutation', logout: { __typename?: 'UserResponse', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'User', id: string, username: string, email: string, accessToken?: string | null, highestScore?: number | null, createdAt: string, updatedAt: string, quizResult: Array<{ __typename?: 'QuizResult', id?: string | null, noCorrectAnswers?: number | null, currentScore?: number | null, createdAt?: string | null, updatedAt?: string | null, totalAnsweredQuestions?: number | null }> } | null } };
 
 export type GetGameQuestionQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -192,22 +207,30 @@ export const UserFragmentFragmentDoc = gql`
   }
 }
     `;
-export const LoginDocument = gql`
-    mutation Login($input: LoginInput!) {
-  login(input: $input) {
+export const GetUserQuizResponseDocument = gql`
+    mutation GetUserQuizResponse($input: [UserQuizResponseInput!]!) {
+  getUserCurrentGameResults(input: $input) {
     error {
-      ...ErrorFragment
+      message
+      field
     }
-    user {
-      ...UserFragment
+    result {
+      id
+      noCorrectAnswers
+      totalAnsweredQuestions
+      currentScore
+      updatedAt
+      createdAt
+      user {
+        ...UserFragment
+      }
     }
   }
 }
-    ${ErrorFragmentFragmentDoc}
-${UserFragmentFragmentDoc}`;
+    ${UserFragmentFragmentDoc}`;
 
-export function useLoginMutation() {
-  return Urql.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument);
+export function useGetUserQuizResponseMutation() {
+  return Urql.useMutation<GetUserQuizResponseMutation, GetUserQuizResponseMutationVariables>(GetUserQuizResponseDocument);
 };
 export const RegisterDocument = gql`
     mutation Register($input: UserInput!) {
@@ -225,6 +248,40 @@ ${UserFragmentFragmentDoc}`;
 
 export function useRegisterMutation() {
   return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
+};
+export const LoginDocument = gql`
+    mutation Login($input: LoginInput!) {
+  login(input: $input) {
+    error {
+      ...ErrorFragment
+    }
+    user {
+      ...UserFragment
+    }
+  }
+}
+    ${ErrorFragmentFragmentDoc}
+${UserFragmentFragmentDoc}`;
+
+export function useLoginMutation() {
+  return Urql.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument);
+};
+export const LogoutDocument = gql`
+    mutation Logout($input: LoginInput!) {
+  logout {
+    error {
+      ...ErrorFragment
+    }
+    user {
+      ...UserFragment
+    }
+  }
+}
+    ${ErrorFragmentFragmentDoc}
+${UserFragmentFragmentDoc}`;
+
+export function useLogoutMutation() {
+  return Urql.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument);
 };
 export const GetGameQuestionDocument = gql`
     query GetGameQuestion {

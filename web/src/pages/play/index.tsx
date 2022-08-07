@@ -2,30 +2,34 @@ import { NextPage } from "next";
 import { withUrqlClient } from "next-urql";
 import { createUrqlClient } from "../../utils/createUrqlClient";
 import { Box, Flex, IconButton, Text } from "@chakra-ui/react";
-import { AppWithUserType } from "../../utils/interface/pages";
 import { QuizeCard } from "../../components/QuizCard";
 import { GiCrossMark } from "react-icons/gi";
 import { BsEmojiHeartEyes } from "react-icons/bs";
 import { useShouldExitPage } from "../../hooks/useShouldExitPage";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import { useGetGameQuestionQuery } from "../../generated/graphql";
+import {
+  useGetGameQuestionQuery,
+  useGetUserQuizResponseMutation,
+  UserQuizResponseInput,
+} from "../../generated/graphql";
 import { CustomAlert } from "../../components/CustomAlert";
-interface AnswerType {
-  questionId?: string;
-  response: boolean;
-}
 
-const PlayGame: NextPage = ({ user }: AppWithUserType) => {
+const PlayGame: NextPage = () => {
   const [shouldExit, setShouldExit] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState<any>(null);
-  const [questionsAnswered, setQuestionsAnswered] = useState<AnswerType[]>([]);
+  const [questionsAnswers, setQuestionsAnswers] = useState<
+    UserQuizResponseInput[]
+  >([]);
   const [isGameOver, setIsGameOver] = useState(false);
   const timeCount = useRef(Date.now() + 60000);
   const [{ data, error, fetching }, executeFetch] = useGetGameQuestionQuery({
     pause: true,
     requestPolicy: "network-only",
   });
+  const [userScore, setUserScore] = useState(0);
+
+  const [, getResults] = useGetUserQuizResponseMutation();
 
   useShouldExitPage(shouldExit);
 
@@ -62,9 +66,13 @@ const PlayGame: NextPage = ({ user }: AppWithUserType) => {
     router,
   ]);
 
-  const onTimeOut = () => {
+  const onTimeOut = async () => {
     setIsGameOver(true);
     setShouldExit(false);
+    const response = await getResults({ input: questionsAnswers });
+    setUserScore(
+      response.data?.getUserCurrentGameResults.result?.currentScore || 0
+    );
   };
 
   if (isGameOver) {
@@ -76,7 +84,7 @@ const PlayGame: NextPage = ({ user }: AppWithUserType) => {
         status="info"
       >
         <Text fontSize="2xl" mt={"2"}>
-          Your Score
+          Your Score {userScore}
         </Text>
       </CustomAlert>
     );
@@ -106,7 +114,7 @@ const PlayGame: NextPage = ({ user }: AppWithUserType) => {
 
   const makeResponse = (answer: boolean) => {
     executeFetch();
-    setQuestionsAnswered((prev) => [
+    setQuestionsAnswers((prev) => [
       ...prev,
       { questionId: currentQuestion?.id, response: answer },
     ]);
@@ -115,7 +123,7 @@ const PlayGame: NextPage = ({ user }: AppWithUserType) => {
   return (
     <Box width={"35%"} margin="auto" mt={20}>
       <QuizeCard
-        questionCount={questionsAnswered.length}
+        questionCount={questionsAnswers.length}
         onCountCompleted={onTimeOut}
         movie={currentQuestion?.movie}
         actor={currentQuestion?.actor}

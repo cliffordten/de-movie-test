@@ -1,0 +1,19 @@
+mutation GetUserQuizResponse($input: [UserQuizResponseInput!]!) {
+  getUserCurrentGameResults(input: $input) {
+    error {
+      message
+      field
+    }
+    result {
+      id
+      noCorrectAnswers
+      totalAnsweredQuestions
+      currentScore
+      updatedAt
+      createdAt
+      user {
+        ...UserFragment
+      }
+    }
+  }
+}
