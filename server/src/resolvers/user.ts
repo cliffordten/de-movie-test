@@ -9,8 +9,14 @@ import {
   Resolver,
 } from "type-graphql";
 import { User } from "../entities/User";
-import { UserResponse, UserInput, LoginInput, AppContext } from "../types";
-import { getToken } from "../utils/jsontoken";
+import {
+  UserResponse,
+  UserInput,
+  LoginInput,
+  AppContext,
+  ErrorType,
+} from "../types";
+import { checkIfUserSessionExist, getToken } from "../utils/jsontoken";
 import { QuizResult } from "../entities/QuizResult";
 @Resolver(() => User)
 export class userResolver {
@@ -97,13 +103,9 @@ export class userResolver {
   @Query(() => UserResponse, { nullable: true })
   async me(@Ctx() { req }: AppContext): Promise<UserResponse | undefined> {
     try {
-      if (!req.headers.userId) {
-        return {
-          error: {
-            field: "headers",
-            message: "User not logged in",
-          },
-        };
+      const isError = checkIfUserSessionExist(req.headers);
+      if (isError) {
+        return isError;
       }
 
       const user = await User.findOne(req.headers.userId as string);
@@ -129,8 +131,16 @@ export class userResolver {
   }
 
   @FieldResolver(() => Number, { nullable: true })
-  async highestScore(): Promise<Number | undefined> {
-    const results = await QuizResult.find();
+  async highestScore(
+    @Ctx() { req }: AppContext
+  ): Promise<Number | { error: ErrorType } | undefined> {
+    const isError = checkIfUserSessionExist(req.headers);
+    if (isError) {
+      return isError;
+    }
+    const results = await QuizResult.find({
+      where: { user: { id: req.headers.userId } },
+    });
     if (!results.length) {
       return;
     }
@@ -141,8 +151,17 @@ export class userResolver {
   }
 
   @FieldResolver(() => QuizResult, { nullable: true })
-  async quizResult(): Promise<QuizResult[] | undefined> {
-    const results = await QuizResult.find();
+  async quizResult(
+    @Ctx() { req }: AppContext
+  ): Promise<QuizResult[] | { error: ErrorType } | undefined> {
+    const isError = checkIfUserSessionExist(req.headers);
+    if (isError) {
+      return isError;
+    }
+
+    const results = await QuizResult.find({
+      where: { user: { id: req.headers.userId } },
+    });
     if (!results.length) {
       return;
     }

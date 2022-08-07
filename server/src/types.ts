@@ -4,15 +4,18 @@ import { InputType, Field, ObjectType } from "type-graphql";
 import { QuizResult } from "./entities/QuizResult";
 import { User } from "./entities/User";
 
-// app input type zs
+// app input type
 @InputType()
 export class UserInput {
   @Field(() => String)
   username!: string;
+
   @Field(() => String)
   email!: string;
+
   @Field(() => String)
   password!: string;
+
   @Field(() => String)
   confirmPassword!: string;
 }
@@ -72,29 +75,29 @@ export class UserSessionType {
 
 @ObjectType()
 export class MovieType {
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   movieName?: string;
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   movieImage?: string;
 }
 
 @ObjectType()
 export class ActorType {
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   actorName?: string;
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   actorImage?: string;
 }
 
 @ObjectType()
 export class QuizType {
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   id: string;
 
-  @Field(() => MovieType)
+  @Field(() => MovieType, { nullable: true })
   movie!: MovieType;
 
-  @Field(() => ActorType)
+  @Field(() => ActorType, { nullable: true })
   actor!: ActorType;
 }
 

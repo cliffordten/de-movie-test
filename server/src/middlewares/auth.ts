@@ -23,7 +23,15 @@ export const AuthMiddleWare = async (
       }
     }
   } catch (error) {
-    console.log("%cauth.ts line:16 error", "color: #007acc;", error);
+    if (error.message?.includes("expired")) {
+      req.headers.jwtExpired = "true";
+    }
+    console.log(
+      "%cauth.ts line:16 error",
+      "color: #007acc;",
+      error.message,
+      error.code
+    );
   }
   next();
 };

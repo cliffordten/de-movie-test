@@ -29,7 +29,12 @@ export const getActor = async (
       movie: actor?.known_for[0],
     };
   } catch (error) {
-    console.log("%getActor line:15 error", "color: #007acc;", error);
+    console.log(
+      "%getActor line:15 error",
+      "color: #007acc;",
+      error.message,
+      error.code
+    );
   }
 };
 
@@ -50,7 +55,12 @@ export const getMovie = async (
 
     return movie.data.results[0];
   } catch (error) {
-    console.log("%getActor line:15 error", "color: #007acc;", error);
+    console.log(
+      "%getActor line:15 error",
+      "color: #007acc;",
+      error.message,
+      error.code
+    );
   }
 };
 
@@ -75,6 +85,11 @@ export const getGameInfo = async (): Promise<any> => {
       even: true,
     };
   } catch (error) {
-    console.log("%getActor line:15 error", "color: #007acc;", error);
+    console.log(
+      "%getActor line:15 error",
+      "color: #007acc;",
+      error.message,
+      error.code
+    );
   }
 };

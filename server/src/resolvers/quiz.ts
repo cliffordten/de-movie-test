@@ -2,12 +2,14 @@ import { getGameInfo } from "../utils/axios/quiz";
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import {
   AppContext,
+  ErrorType,
   QuizResponse,
   QuizResultResponse,
   UserQuizResponseInput,
 } from "../types";
 import { randomUUID } from "crypto";
 import { QuizResult } from "../entities/QuizResult";
+import { checkIfUserSessionExist } from "../utils/jsontoken";
 
 const imageBaseUrl = "https://image.tmdb.org/t/p/w220_and_h330_face";
 
@@ -19,13 +21,10 @@ export class quizResolver {
   ): Promise<QuizResponse | undefined> {
     try {
       const userId = req.headers.userId as string;
-      if (!userId) {
-        return {
-          error: {
-            field: "headers",
-            message: "User not logged in",
-          },
-        };
+
+      const isError = checkIfUserSessionExist(req.headers);
+      if (isError) {
+        return isError;
       }
 
       const gameInfo = await getGameInfo();
@@ -35,9 +34,15 @@ export class quizResolver {
       const quizAnswer = { id: quizeId, ans: gameInfo.correctAnswer };
 
       console.log(gameInfo.correctAnswer, gameInfo.even);
+      console.log({
+        actorName: actor.name,
+        movieName: movie.title,
+      });
 
       //store answers to user question in redis
-      await redis.rpush(userId, JSON.stringify(quizAnswer));
+      if (actor.name && movie.title) {
+        await redis.rpush(userId, JSON.stringify(quizAnswer));
+      }
 
       return {
         quiz: {
@@ -63,19 +68,16 @@ export class quizResolver {
   }
 
   @Mutation(() => QuizResultResponse)
-  async getGameResults(
+  async getUserCurrentGameResults(
     @Arg("input", () => [UserQuizResponseInput]) input: UserQuizResponseInput[],
     @Ctx() { req, redis }: AppContext
   ): Promise<QuizResultResponse | undefined> {
     try {
       const userId = req.headers.userId as string;
-      if (!userId) {
-        return {
-          error: {
-            field: "headers",
-            message: "User not logged in",
-          },
-        };
+
+      const isError = checkIfUserSessionExist(req.headers);
+      if (isError) {
+        return isError;
       }
 
       let noCorrectAnswers = 0;
@@ -112,6 +114,27 @@ export class quizResolver {
       return {
         result,
       };
+    } catch (error) {
+      return {
+        error: {
+          field: error.path,
+          message: error.message || "Internal Server Error",
+        },
+      };
+    }
+  }
+
+  @Query(() => QuizResult)
+  async getAllUserGameResults(
+    @Ctx() { req }: AppContext
+  ): Promise<QuizResult[] | { error: ErrorType } | undefined> {
+    try {
+      const isError = checkIfUserSessionExist(req.headers);
+      if (isError) {
+        return isError;
+      }
+
+      return QuizResult.find({ where: { user: { id: req.headers.userId } } });
     } catch (error) {
       return {
         error: {
