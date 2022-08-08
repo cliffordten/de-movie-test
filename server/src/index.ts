@@ -8,6 +8,8 @@ import config from "./constants";
 import { createSchema } from "./utils/createSchema";
 import { redis } from "./utils/redis";
 import { AuthMiddleWare } from "./middlewares";
+import { checkHealth } from "./routes/health";
+import { getConnectionManager } from "typeorm";
 // import { AppContext } from "./types";
 
 const main = async () => {
@@ -16,9 +18,13 @@ const main = async () => {
 
   while (retries) {
     try {
-      const conn = await openDBConnection();
-      await conn.synchronize();
-      await conn.runMigrations();
+      const { connections } = getConnectionManager();
+
+      if (!connections.length) {
+        const conn = await openDBConnection();
+        await conn.synchronize();
+        await conn.runMigrations();
+      }
       break;
     } catch (error) {
       retries -= 1;
@@ -33,6 +39,7 @@ const main = async () => {
   const app = express();
 
   app.use(AuthMiddleWare);
+  app.get("/health", checkHealth);
 
   //set up cors with express cors middlewares
   app.use(
