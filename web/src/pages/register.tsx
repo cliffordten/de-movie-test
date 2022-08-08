@@ -1,7 +1,13 @@
 import { NextPage } from "next";
 import { Formik, Form } from "formik";
 import { Wrapper } from "../components/Wrapper";
-import { Box, Button, InputGroup, InputRightElement } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  InputGroup,
+  InputRightElement,
+  Link,
+} from "@chakra-ui/react";
 import { InputField } from "../components/InputField";
 import { withUrqlClient } from "next-urql";
 import { createUrqlClient } from "../utils/createUrqlClient";
@@ -12,6 +18,8 @@ import { FaEyeSlash, FaEye } from "react-icons/fa";
 import { useState } from "react";
 import WithAuth from "../hooks/withAuth";
 import { CustomAlert } from "../components/CustomAlert";
+import NextLink from "next/link";
+
 interface IRegisterProps {}
 
 const Register: NextPage<IRegisterProps> = () => {
@@ -118,6 +126,11 @@ const Register: NextPage<IRegisterProps> = () => {
                   )}
                 </InputRightElement>
               </InputGroup>
+            </Box>
+            <Box mt={4}>
+              <NextLink href="/login" passHref>
+                <Link color="blue.600">login here!</Link>
+              </NextLink>
             </Box>
             <Button
               type="submit"
