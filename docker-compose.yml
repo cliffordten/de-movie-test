@@ -59,6 +59,7 @@ services:
       - starter-db
     volumes:
       - ./server:/app
+      - ./server/node_modules:/app/node_modules
     command: /bin/sh "./entrypoint.sh"
 
 networks:

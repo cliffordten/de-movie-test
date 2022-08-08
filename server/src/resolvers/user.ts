@@ -1,4 +1,4 @@
-// import { generateHash } from "../utils/passEncrypt";
+import { generateHash, compareHash } from "../utils/passEncrypt";
 import { loginSchema, registerSchema } from "../utils/yup/auth.schema";
 import {
   Arg,
@@ -39,8 +39,7 @@ export class userResolver {
       return {
         user: await User.create({
           ...input,
-          password: input.password,
-          // password: await generateHash(input.password),
+          password: await generateHash(input.password),
         }).save(),
       };
     } catch (error) {
@@ -69,7 +68,7 @@ export class userResolver {
         };
       }
 
-      if (user.password !== input.password) {
+      if (!(await compareHash(input.password, user.password))) {
         return {
           error: {
             field: "password",
