@@ -64,6 +64,12 @@ BACK_END_URL=http://localhost:4000/
 FRONT_END_URL=http://localhost:3000
 # sudio Apollo graphql URL
 STUDIO_APOLLO_GRAPHQL_URL=https://studio.apollographql.com
+# server secret
+SECRET=4000
+# redis server endpoint
+REDIS_HOST=redis-server
+# redis server port
+REDIS_PORT=6379
 ```
 
 - create `.env.database` file and add the following variables (adapt to your environment).
