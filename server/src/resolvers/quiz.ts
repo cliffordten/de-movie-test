@@ -22,6 +22,8 @@ import { checkIfUserSessionExist } from "../utils/jsontoken";
 import { User } from "../entities/User";
 import config from "../constants";
 
+const imageBaseUrl = config.imageBaseUrl;
+
 @Resolver(QuizResult)
 export class quizResolver {
   @Query(() => QuizResponse, { nullable: true })
@@ -106,11 +108,11 @@ export class quizResolver {
         quiz: {
           id: quizeId,
           actor: {
-            actorImage: config.imageBaseUrl + actor.profile_path,
+            actorImage: imageBaseUrl + actor.profile_path,
             actorName: actor.name,
           },
           movie: {
-            movieImage: config.imageBaseUrl + movie.poster_path,
+            movieImage: imageBaseUrl + movie.poster_path,
             movieName: movie.title || movie.name,
           },
         },
