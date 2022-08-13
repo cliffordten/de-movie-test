@@ -9,11 +9,13 @@ import { useShouldExitPage } from "../../hooks/useShouldExitPage";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import {
+  PreviousQuizResponseInput,
   useGetGameQuestionQuery,
   useGetUserQuizResponseMutation,
   UserQuizResponseInput,
 } from "../../generated/graphql";
 import { CustomAlert } from "../../components/CustomAlert";
+import WithAuth from "../../hooks/withAuth";
 
 const PlayGame: NextPage = () => {
   const [shouldExit, setShouldExit] = useState(false);
@@ -21,13 +23,22 @@ const PlayGame: NextPage = () => {
   const [questionsAnswers, setQuestionsAnswers] = useState<
     UserQuizResponseInput[]
   >([]);
+  const [input, setInput] = useState<PreviousQuizResponseInput>({
+    prevQuestionId: null,
+    response: null,
+  });
   const [isGameOver, setIsGameOver] = useState(false);
   const timeCount = useRef(Date.now() + 60000);
   const [{ data, error, fetching }, executeFetch] = useGetGameQuestionQuery({
     pause: true,
     requestPolicy: "network-only",
+    variables: {
+      input: { ...input },
+    },
   });
   const [userScore, setUserScore] = useState(0);
+
+  const [gameErrors, setGameErrors] = useState<string | null | undefined>(null);
 
   const [, getResults] = useGetUserQuizResponseMutation();
 
@@ -40,7 +51,6 @@ const PlayGame: NextPage = () => {
     setUserScore(
       response.data?.getUserCurrentGameResults.result?.currentScore || 0
     );
-    console.log("%cindex.tsx line:43 response", "color: #007acc;", response);
   }, [getResults, questionsAnswers]);
 
   useEffect(() => {
@@ -53,7 +63,7 @@ const PlayGame: NextPage = () => {
     }
 
     return () => {};
-  }, []);
+  }, [executeFetch, router]);
 
   useEffect(() => {
     if (data?.getGameQuestion?.quiz) {
@@ -61,18 +71,29 @@ const PlayGame: NextPage = () => {
     }
 
     if (error || data?.getGameQuestion?.error) {
-      setShouldExit(false);
       fetchGameResult();
+      setShouldExit(false);
+      setGameErrors(data?.getGameQuestion?.error?.message || error?.message);
+      setIsGameOver(true);
     }
 
     return () => {};
   }, [
     data?.getGameQuestion?.error,
     data?.getGameQuestion?.quiz,
+    data?.getGameQuestion?.game,
     error,
     fetchGameResult,
     router,
   ]);
+
+  useEffect(() => {
+    if (input.prevQuestionId && input.response) {
+      executeFetch();
+    }
+
+    return () => {};
+  }, [executeFetch, input.prevQuestionId, input.response]);
 
   const onTimeOut = async () => {
     await fetchGameResult();
@@ -84,7 +105,7 @@ const PlayGame: NextPage = () => {
     return (
       <CustomAlert
         onClick={() => router.push("/user")}
-        message={"Game Time Out"}
+        message={gameErrors ? "Game Over" : "Game Time Out"}
         bottonText="Game History"
         status="info"
       >
@@ -103,22 +124,11 @@ const PlayGame: NextPage = () => {
     );
   }
 
-  if (error || data?.getGameQuestion?.error) {
-    return (
-      <CustomAlert
-        onClick={() => router.push("/user")}
-        message={error?.message || data?.getGameQuestion?.error?.message}
-        bottonText="Game History"
-      >
-        <Text fontSize="2xl" mt={"2"}>
-          Your Score
-        </Text>
-      </CustomAlert>
-    );
-  }
-
   const makeResponse = (answer: boolean) => {
-    executeFetch();
+    setInput({
+      prevQuestionId: currentQuestion?.id,
+      response: answer,
+    });
     setQuestionsAnswers((prev) => [
       ...prev,
       { questionId: currentQuestion?.id, response: answer },
@@ -162,6 +172,5 @@ const PlayGame: NextPage = () => {
 };
 
 export default withUrqlClient(createUrqlClient, { ssr: false })(
-  PlayGame
-  // WithAuth(PlayGame)
+  WithAuth(PlayGame)
 );

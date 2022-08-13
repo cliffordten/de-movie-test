@@ -4,7 +4,7 @@ import { InputType, Field, ObjectType } from "type-graphql";
 import { QuizResult } from "./entities/QuizResult";
 import { User } from "./entities/User";
 
-// app input types
+// app input typess
 @InputType()
 export class UserInput {
   @Field(() => String)
@@ -36,6 +36,15 @@ export class UserQuizResponseInput {
 
   @Field(() => Boolean)
   response!: boolean;
+}
+
+@InputType()
+export class PreviousQuizResponseInput {
+  @Field(() => String, { nullable: true })
+  prevQuestionId?: string;
+
+  @Field(() => Boolean, { nullable: true })
+  response?: boolean;
 }
 
 // app object types
@@ -111,12 +120,27 @@ export class QuizType {
 }
 
 @ObjectType()
+export class Gametype {
+  @Field(() => Boolean, { defaultValue: false })
+  isGameOver: boolean;
+
+  @Field(() => Number, { defaultValue: 0 })
+  noQuestionAnswered!: number;
+
+  @Field(() => String, { nullable: true })
+  lastQuestionId?: string;
+}
+
+@ObjectType()
 export class QuizResponse {
   @Field(() => ErrorType, { nullable: true })
   error?: ErrorType;
 
   @Field(() => QuizType, { nullable: true })
   quiz?: QuizType;
+
+  @Field(() => Gametype, { nullable: true })
+  game?: Gametype;
 }
 
 @ObjectType()

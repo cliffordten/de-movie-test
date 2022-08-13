@@ -10,6 +10,7 @@ import {
 import {
   AppContext,
   ErrorType,
+  PreviousQuizResponseInput,
   QuizResponse,
   QuizResultResponse,
   UserQuizResponseInput,
@@ -26,6 +27,8 @@ const imageBaseUrl = "https://image.tmdb.org/t/p/w220_and_h330_face";
 export class quizResolver {
   @Query(() => QuizResponse, { nullable: true })
   async getGameQuestion(
+    @Arg("input", () => PreviousQuizResponseInput)
+    input: PreviousQuizResponseInput,
     @Ctx() { req, redis }: AppContext
   ): Promise<QuizResponse> {
     try {
@@ -34,6 +37,59 @@ export class quizResolver {
       const isError = checkIfUserSessionExist(req.headers, req.body.query);
       if (isError) {
         return isError;
+      }
+
+      //get correct answers
+      const userQuestions = await redis.lrange(userId, 0, -1);
+      let lastQuestionId = undefined;
+
+      if (!input.prevQuestionId && userQuestions.length) {
+        return {
+          error: {
+            field: "game",
+            message: "Last question id is required",
+          },
+          game: {
+            isGameOver: false,
+            noQuestionAnswered: userQuestions.length,
+            lastQuestionId,
+          },
+        };
+      }
+
+      // check if previous question is correct
+      if (input.prevQuestionId) {
+        const correctAnswers = userQuestions.map((item) => JSON.parse(item));
+        const lastQuizAnswer = correctAnswers[correctAnswers.length - 1];
+        lastQuestionId = lastQuizAnswer.id;
+
+        if (input.prevQuestionId !== lastQuizAnswer.id) {
+          return {
+            error: {
+              field: "game",
+              message: "Last question id is not correct",
+            },
+            game: {
+              isGameOver: false,
+              noQuestionAnswered: userQuestions.length,
+              lastQuestionId,
+            },
+          };
+        }
+
+        if (input.response !== lastQuizAnswer.ans) {
+          return {
+            error: {
+              field: "game",
+              message:
+                "Game Over!! Last Question response is not correct, get game results to terminate the game.",
+            },
+            game: {
+              isGameOver: true,
+              noQuestionAnswered: userQuestions.length,
+            },
+          };
+        }
       }
 
       const gameInfo = await getGameInfo();
@@ -58,6 +114,11 @@ export class quizResolver {
             movieImage: imageBaseUrl + movie.poster_path,
             movieName: movie.title || movie.name,
           },
+        },
+        game: {
+          isGameOver: false,
+          noQuestionAnswered: userQuestions.length,
+          lastQuestionId,
         },
       };
     } catch (error) {
@@ -110,7 +171,6 @@ export class quizResolver {
 
       await redis.del(userId);
 
-      console.log(noCorrectAnswers, "noCorrectAnswers", userQuestions.length);
       return {
         result: await QuizResult.create({
           noCorrectAnswers,

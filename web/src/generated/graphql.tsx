@@ -27,6 +27,13 @@ export type ErrorType = {
   message: Scalars['String'];
 };
 
+export type Gametype = {
+  __typename?: 'Gametype';
+  isGameOver?: Maybe<Scalars['Boolean']>;
+  lastQuestionId?: Maybe<Scalars['String']>;
+  noQuestionAnswered?: Maybe<Scalars['Float']>;
+};
+
 export type LoginInput = {
   email: Scalars['String'];
   password: Scalars['String'];
@@ -61,6 +68,11 @@ export type MutationRegisterArgs = {
   input: UserInput;
 };
 
+export type PreviousQuizResponseInput = {
+  prevQuestionId?: InputMaybe<Scalars['String']>;
+  response?: InputMaybe<Scalars['Boolean']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   getAllUserGameResults?: Maybe<UserResultResponse>;
@@ -74,9 +86,15 @@ export type QueryGetByUsernameArgs = {
   username: Scalars['String'];
 };
 
+
+export type QueryGetGameQuestionArgs = {
+  input: PreviousQuizResponseInput;
+};
+
 export type QuizResponse = {
   __typename?: 'QuizResponse';
   error?: Maybe<ErrorType>;
+  game?: Maybe<Gametype>;
   quiz?: Maybe<QuizType>;
 };
 
@@ -175,10 +193,12 @@ export type RegisterMutationVariables = Exact<{
 
 export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, user?: { __typename?: 'User', id: string, username: string, email: string, accessToken?: string | null, highestScore?: number | null, createdAt: string, updatedAt: string } | null } };
 
-export type GetGameQuestionQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetGameQuestionQueryVariables = Exact<{
+  input: PreviousQuizResponseInput;
+}>;
 
 
-export type GetGameQuestionQuery = { __typename?: 'Query', getGameQuestion?: { __typename?: 'QuizResponse', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, quiz?: { __typename?: 'QuizType', id?: string | null, movie?: { __typename?: 'MovieType', movieImage?: string | null, movieName?: string | null } | null, actor?: { __typename?: 'ActorType', actorImage?: string | null, actorName?: string | null } | null } | null } | null };
+export type GetGameQuestionQuery = { __typename?: 'Query', getGameQuestion?: { __typename?: 'QuizResponse', error?: { __typename?: 'ErrorType', field?: string | null, message: string } | null, quiz?: { __typename?: 'QuizType', id?: string | null, movie?: { __typename?: 'MovieType', movieImage?: string | null, movieName?: string | null } | null, actor?: { __typename?: 'ActorType', actorImage?: string | null, actorName?: string | null } | null } | null, game?: { __typename?: 'Gametype', isGameOver?: boolean | null, noQuestionAnswered?: number | null, lastQuestionId?: string | null } | null } | null };
 
 export type GetMeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -290,8 +310,8 @@ export function useRegisterMutation() {
   return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
 };
 export const GetGameQuestionDocument = gql`
-    query GetGameQuestion {
-  getGameQuestion {
+    query GetGameQuestion($input: PreviousQuizResponseInput!) {
+  getGameQuestion(input: $input) {
     error {
       field
       message
@@ -307,11 +327,16 @@ export const GetGameQuestionDocument = gql`
         actorName
       }
     }
+    game {
+      isGameOver
+      noQuestionAnswered
+      lastQuestionId
+    }
   }
 }
     `;
 
-export function useGetGameQuestionQuery(options?: Omit<Urql.UseQueryArgs<GetGameQuestionQueryVariables>, 'query'>) {
+export function useGetGameQuestionQuery(options: Omit<Urql.UseQueryArgs<GetGameQuestionQueryVariables>, 'query'>) {
   return Urql.useQuery<GetGameQuestionQuery>({ query: GetGameQuestionDocument, ...options });
 };
 export const GetMeDocument = gql`

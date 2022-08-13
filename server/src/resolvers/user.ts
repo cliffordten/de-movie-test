@@ -155,7 +155,6 @@ export class userResolver {
   async highestScore(
     @Ctx() { req }: AppContext
   ): Promise<Number | { error: ErrorType } | undefined> {
-    console.log("%cuser.ts line:165 req.body", "color: #007acc;", req.body);
     const isError = checkIfUserSessionExist(req.headers, req.body.query);
 
     if (isError) {
