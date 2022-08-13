@@ -20,8 +20,7 @@ import { randomUUID } from "crypto";
 import { QuizResult } from "../entities/QuizResult";
 import { checkIfUserSessionExist } from "../utils/jsontoken";
 import { User } from "../entities/User";
-
-const imageBaseUrl = "https://image.tmdb.org/t/p/w220_and_h330_face";
+import config from "../constants";
 
 @Resolver(QuizResult)
 export class quizResolver {
@@ -107,11 +106,11 @@ export class quizResolver {
         quiz: {
           id: quizeId,
           actor: {
-            actorImage: imageBaseUrl + actor.profile_path,
+            actorImage: config.imageBaseUrl + actor.profile_path,
             actorName: actor.name,
           },
           movie: {
-            movieImage: imageBaseUrl + movie.poster_path,
+            movieImage: config.imageBaseUrl + movie.poster_path,
             movieName: movie.title || movie.name,
           },
         },

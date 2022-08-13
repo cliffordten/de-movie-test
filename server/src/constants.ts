@@ -18,4 +18,5 @@ export default {
   redisHost: process.env.REDIS_HOST || "",
   redisPort: process.env.REDIS_PORT || "",
   jwtDuration: "24h",
+  imageBaseUrl: process.env.IMAGE_BASE_URL,
 };

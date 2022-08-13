@@ -70,6 +70,8 @@ SECRET=4000
 REDIS_HOST=redis-server
 # redis server port
 REDIS_PORT=6379
+# image base url for 
+IMAGE_BASE_URL=https://image.tmdb.org/t/p/w220_and_h330_face
 ```
 
 - create `.env.database` file and add the following variables (adapt to your environment).
