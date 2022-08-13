@@ -93,7 +93,7 @@ export class userResolver {
   @Mutation(() => UserResponse)
   async logout(@Ctx() { redis, req }: AppContext): Promise<UserResponse> {
     try {
-      const isError = checkIfUserSessionExist(req.headers);
+      const isError = checkIfUserSessionExist(req.headers, req.body.query);
       if (isError) {
         return isError;
       }
@@ -124,7 +124,7 @@ export class userResolver {
   @Query(() => UserResponse, { nullable: true })
   async me(@Ctx() { req }: AppContext): Promise<UserResponse | undefined> {
     try {
-      const isError = checkIfUserSessionExist(req.headers);
+      const isError = checkIfUserSessionExist(req.headers, req.body.query);
       if (isError) {
         return isError;
       }
@@ -155,16 +155,22 @@ export class userResolver {
   async highestScore(
     @Ctx() { req }: AppContext
   ): Promise<Number | { error: ErrorType } | undefined> {
-    const isError = checkIfUserSessionExist(req.headers);
+    console.log("%cuser.ts line:165 req.body", "color: #007acc;", req.body);
+    const isError = checkIfUserSessionExist(req.headers, req.body.query);
+
     if (isError) {
       return isError;
     }
+
     const results = await QuizResult.find({
+      relations: ["user"],
       where: { user: { id: req.headers.userId } },
     });
+
     if (!results.length) {
       return 0;
     }
+
     return (
       results.sort((a, b) => b.noCorrectAnswers - a.noCorrectAnswers)[0]
         .noCorrectAnswers * 10
@@ -175,12 +181,13 @@ export class userResolver {
   async quizResult(
     @Ctx() { req }: AppContext
   ): Promise<QuizResult[] | { error: ErrorType } | undefined> {
-    const isError = checkIfUserSessionExist(req.headers);
+    const isError = checkIfUserSessionExist(req.headers, req.body.query);
     if (isError) {
       return isError;
     }
 
     const result = await QuizResult.find({
+      relations: ["user"],
       where: { user: { id: req.headers.userId } },
     });
 
@@ -193,7 +200,7 @@ export class userResolver {
     @Ctx() { req, redis }: AppContext
   ): Promise<String | { error: ErrorType } | undefined> {
     // set token if Login mutation is run
-    if (req.body.operationName == "Login") {
+    if (req.body?.query?.includes("login")) {
       const accessToken = getToken({ id: user.id, email: user.email });
 
       //store user token in redis
@@ -203,7 +210,7 @@ export class userResolver {
     }
 
     // get the token from the headers
-    const isError = checkIfUserSessionExist(req.headers);
+    const isError = checkIfUserSessionExist(req.headers, req.body.query);
     if (isError) {
       return isError;
     }

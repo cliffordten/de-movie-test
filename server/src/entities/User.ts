@@ -11,7 +11,7 @@ import {
 import { QuizResult } from "./QuizResult";
 
 @ObjectType()
-@Entity()
+@Entity("user")
 export class User extends BaseEntity {
   @Field(() => String)
   @PrimaryGeneratedColumn("uuid")

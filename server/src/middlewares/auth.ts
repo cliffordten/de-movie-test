@@ -33,7 +33,7 @@ export const AuthMiddleWare = async (
       error.code
     );
   }
-  next();
+  return next();
 };
 
 export default AuthMiddleWare;

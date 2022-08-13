@@ -31,7 +31,7 @@ export class quizResolver {
     try {
       const userId = req.headers.userId as string;
 
-      const isError = checkIfUserSessionExist(req.headers);
+      const isError = checkIfUserSessionExist(req.headers, req.body.query);
       if (isError) {
         return isError;
       }
@@ -78,7 +78,7 @@ export class quizResolver {
     try {
       const userId = req.headers.userId as string;
 
-      const isError = checkIfUserSessionExist(req.headers);
+      const isError = checkIfUserSessionExist(req.headers, req.body.query);
       if (isError) {
         return isError;
       }
@@ -133,7 +133,7 @@ export class quizResolver {
     @Ctx() { req }: AppContext
   ): Promise<UserResultResponse> {
     try {
-      const isError = checkIfUserSessionExist(req.headers);
+      const isError = checkIfUserSessionExist(req.headers, req.body.query);
       if (isError) {
         return isError;
       }
@@ -157,7 +157,7 @@ export class quizResolver {
   async user(
     @Ctx() { req }: AppContext
   ): Promise<User | { error: ErrorType } | undefined> {
-    const isError = checkIfUserSessionExist(req.headers);
+    const isError = checkIfUserSessionExist(req.headers, req.body.query);
     if (isError) {
       return isError;
     }
